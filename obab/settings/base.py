@@ -40,7 +40,35 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "drf_spectacular",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Obab-project',
+    'DESCRIPTION': "Obab API 문서입니다.</br>"
+                   "토큰 인증을 하실 때는 헤더에 'Token xxx' 형태로 액세스 토큰에 Token(Bearer) 접두사를 붙여주세요.</br>"
+                   "로컬에서 개발하실 때에는 하단의 HTTP 스키마를 선택해 주시고, 실제 서버에서는 HTTPS 스키마를 선택해 주세요.",
+    'SWAGGER_UI_SETTINGS': {
+        'dom_id': '#swagger-ui',
+        'layout': 'BaseLayout',
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+        'filter': True,
+    },
+    'LICENSE': {
+        'name': 'Git Hub',
+        'url': 'https://github.com/O-BAB/obab-server',
+    },
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
