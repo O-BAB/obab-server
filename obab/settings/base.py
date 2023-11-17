@@ -25,12 +25,6 @@ env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,12 +93,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "obab.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
