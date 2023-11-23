@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, **extra_fields):
-        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_active", False)
 
@@ -54,7 +54,7 @@ class User(AbstractBaseUser, TimeStampedModel, PermissionsMixin):
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
     gender = models.IntegerField(default=0, null=True)
     phone = models.CharField(max_length=50, null=True, blank=True)
-    is_active = models.BooleanField(_("active"), default=False)
+    is_active = models.BooleanField(_("active"), default=True)
     is_staff = models.BooleanField(_("is_staff"), default=False)
     is_superuser = models.BooleanField(_("is_superuser"), default=False)
 
