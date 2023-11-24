@@ -49,7 +49,7 @@ class User(AbstractBaseUser, TimeStampedModel, PermissionsMixin):
     profile = models.ImageField(
         _("profile image"),
         upload_to=upload_user_img,
-        default="img/default/default_img.jpg",
+        default="img/default/default_user_img.jpg",
     )
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
     gender = models.IntegerField(default=0, null=True)
