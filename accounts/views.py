@@ -12,7 +12,7 @@ class Constants:
             "https://www.googleapis.com/auth/userinfo.email",
         ]
     )
-    state = getattr(settings, "state")
+    STATE = getattr(settings, "STATE")
 
     REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY")
     KAKAO_CALLBACK_URI = f"http://localhost:3000/kakao"

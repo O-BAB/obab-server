@@ -49,7 +49,7 @@ class GoogleCallbackView(APIView):
         GOOGLE_CLIENT_SECRET = Constants.GOOGLE_CLIENT_SECRET
         GOOGLE_CALLBACK_URI = Constants.GOOGLE_CALLBACK_URI
         code = request.GET.get("code")
-        state = Constants.state
+        state = Constants.STATE
 
         token_req = requests.post(
             f"https://oauth2.googleapis.com/token?client_id={GOOGLE_CLIENT_ID}"
