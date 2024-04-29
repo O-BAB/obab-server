@@ -82,3 +82,34 @@ class ConvenienceRecipesSerializer(BaseRecipeSerializer):
         convenience_item = ConvenienceItems.objects.filter(foodrecipe=data.id)
         serializer = ConvenienceItemsSerializer(convenience_item, many=True)
         return serializer.data
+
+
+class SearchRecipeSerializer(serializers.ModelSerializer):
+    like_count = serializers.SerializerMethodField()
+    bookmark_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FoodRecipes
+        fields = [
+            "id",
+            "like_count",
+            "bookmark_count",
+            "created_at",
+            "updated_at",
+            "categoryCD",
+            "title",
+            "tot_price",
+            "thumnail",
+            "video",
+            "intro",
+            "time",
+            "people_num",
+            "difficulty",
+            "user",
+        ]
+
+    def get_like_count(self, obj):
+        return obj.like.count()
+
+    def get_bookmark_count(self, obj):
+        return obj.bookmark.count()
