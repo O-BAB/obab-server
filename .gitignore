@@ -6,3 +6,4 @@ media
 Makefile
 obab_env/
 .env
+*/migrations/

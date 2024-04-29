@@ -10,6 +10,7 @@ from .viewsets.ingredients import IngredientsViewset
 from .viewsets.recipe_process import RecipeProcessViewset
 from .viewsets.convenience_items import ConvenienceItemsViewset
 from .viewsets.recipe_images import RecipeImageViewset
+from .views import SearchRecipe
 
 router = DefaultRouter()
 router.register(r"food-recipes", FoodRecipesViewSet, basename="food-recipes")
@@ -34,4 +35,5 @@ router.register(r"recipe-images", RecipeImageViewset, basename="recipe-images")
 # 라우터 URL을 urlpatterns에 추가
 urlpatterns = [
     path("", include(router.urls)),
+    path("search", SearchRecipe.as_view()),
 ]
