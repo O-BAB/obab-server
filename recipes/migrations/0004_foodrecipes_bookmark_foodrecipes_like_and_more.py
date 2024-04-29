@@ -8,24 +8,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipes', '0003_convenienceitems'),
+        ("recipes", "0003_convenienceitems"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='foodrecipes',
-            name='bookmark',
-            field=models.ManyToManyField(blank=True, related_name='user_foodrecipe_bookmark', to=settings.AUTH_USER_MODEL),
+            model_name="foodrecipes",
+            name="bookmark",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="user_foodrecipe_bookmark",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='foodrecipes',
-            name='like',
-            field=models.ManyToManyField(blank=True, related_name='user_foodrecipe_like', to=settings.AUTH_USER_MODEL),
+            model_name="foodrecipes",
+            name="like",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="user_foodrecipe_like",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='foodrecipes',
-            name='author',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_foodrecipe_author', to=settings.AUTH_USER_MODEL),
+            model_name="foodrecipes",
+            name="author",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_foodrecipe_author",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

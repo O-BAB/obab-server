@@ -8,69 +8,166 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CookingMethod',
+            name="CookingMethod",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Fullness',
+            name="Fullness",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='MeatType',
+            name="MeatType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Spicy',
+            name="Spicy",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Temperature',
+            name="Temperature",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Type',
+            name="Type",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('eng_name', models.CharField(max_length=50)),
-                ('kor_name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("eng_name", models.CharField(max_length=50)),
+                ("kor_name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='MenuList',
+            name="MenuList",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('cooking_method', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.cookingmethod')),
-                ('fullness', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.fullness')),
-                ('meat_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.meattype')),
-                ('spicy', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.spicy')),
-                ('temperature', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.temperature')),
-                ('type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='menu.type')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "cooking_method",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.cookingmethod",
+                    ),
+                ),
+                (
+                    "fullness",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.fullness",
+                    ),
+                ),
+                (
+                    "meat_type",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.meattype",
+                    ),
+                ),
+                (
+                    "spicy",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.spicy",
+                    ),
+                ),
+                (
+                    "temperature",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.temperature",
+                    ),
+                ),
+                (
+                    "type",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="menu.type",
+                    ),
+                ),
             ],
         ),
     ]

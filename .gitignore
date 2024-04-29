@@ -4,4 +4,5 @@
 __pycache__/
 media
 Makefile
+obab_env/
 .env

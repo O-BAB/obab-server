@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comments', '0001_initial'),
+        ("comments", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='comments',
-            name='created_at',
+            model_name="comments",
+            name="created_at",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
         migrations.AddField(
-            model_name='comments',
-            name='updated_at',
+            model_name="comments",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

@@ -15,36 +15,92 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='FoodRecipes',
+            name="FoodRecipes",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('categoryCD', models.CharField(blank=True, choices=[('food_recipe', '음식 레시피'), ('menu_recommendation', '메뉴 추천'), ('convenience_store_combination', '편의점 꿀 조합'), ('seasoning_recipe', '양념 레시피'), ('cooking_tip', '요리 TIP')], max_length=100, null=True)),
-                ('title', models.CharField(max_length=255)),
-                ('tot_price', models.IntegerField(blank=True, null=True)),
-                ('sumnail', models.ImageField(blank=True, null=True, upload_to='')),
-                ('video', models.URLField(blank=True, null=True)),
-                ('intro', models.CharField(blank=True, max_length=255, null=True)),
-                ('time', models.TimeField(blank=True, null=True)),
-                ('people_num', models.IntegerField(blank=True, null=True)),
-                ('difficulty', models.CharField(blank=True, choices=[('easy', '쉬움'), ('medium', '보통'), ('hard', '어려움')], max_length=10, null=True)),
-                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "categoryCD",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("food_recipe", "음식 레시피"),
+                            ("menu_recommendation", "메뉴 추천"),
+                            ("convenience_store_combination", "편의점 꿀 조합"),
+                            ("seasoning_recipe", "양념 레시피"),
+                            ("cooking_tip", "요리 TIP"),
+                        ],
+                        max_length=100,
+                        null=True,
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("tot_price", models.IntegerField(blank=True, null=True)),
+                ("sumnail", models.ImageField(blank=True, null=True, upload_to="")),
+                ("video", models.URLField(blank=True, null=True)),
+                ("intro", models.CharField(blank=True, max_length=255, null=True)),
+                ("time", models.TimeField(blank=True, null=True)),
+                ("people_num", models.IntegerField(blank=True, null=True)),
+                (
+                    "difficulty",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("easy", "쉬움"),
+                            ("medium", "보통"),
+                            ("hard", "어려움"),
+                        ],
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                (
+                    "author",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Ingredients',
+            name="Ingredients",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(max_length=10)),
-                ('name', models.CharField(max_length=50)),
-                ('count', models.SmallIntegerField()),
-                ('unit', models.CharField(max_length=10)),
-                ('etc', models.CharField(max_length=255)),
-                ('foodrecipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.foodrecipes')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.CharField(max_length=10)),
+                ("name", models.CharField(max_length=50)),
+                ("count", models.SmallIntegerField()),
+                ("unit", models.CharField(max_length=10)),
+                ("etc", models.CharField(max_length=255)),
+                (
+                    "foodrecipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="recipes.foodrecipes",
+                    ),
+                ),
             ],
         ),
     ]
