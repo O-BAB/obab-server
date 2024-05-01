@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import FoodRecipes
 from core.tokens import get_user_id
 
+
 class LikeToggleAPIView(APIView):
     @swagger_auto_schema(
         operation_id="게시물 좋아요",
@@ -24,18 +25,18 @@ class LikeToggleAPIView(APIView):
         ],
     )
     def post(self, request):
-        recipe_id = request.GET.get('id')
+        recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
         user = get_user_id(self.request)
-        
+
         if user in recipe.like.all():
             recipe.like.remove(user)
             liked = False
         else:
             recipe.like.add(user)
             liked = True
-        
-        return Response({'liked': liked}, status=status.HTTP_200_OK)
+
+        return Response({"liked": liked}, status=status.HTTP_200_OK)
 
 
 class BookmarkToggleAPIView(APIView):
@@ -53,18 +54,20 @@ class BookmarkToggleAPIView(APIView):
         ],
     )
     def post(self, request):
-        recipe_id = request.GET.get('id')
+        recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
         user = get_user_id(self.request)
-        
+
         if user in recipe.bookmark.all():
             recipe.bookmark.remove(user)
             bookmarked = False
         else:
             recipe.bookmark.add(user)
             bookmarked = True
-        
-        return Response({'bookmarked': bookmarked}, status=status.HTTP_200_OK)
+
+        return Response({"bookmarked": bookmarked}, status=status.HTTP_200_OK)
+
+
 from django.db.models import Count
 
 from rest_framework.response import Response

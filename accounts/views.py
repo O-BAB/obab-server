@@ -1,43 +1,55 @@
-import requests
-
-from django.conf import settings
-from django.http import JsonResponse
-from django.shortcuts import redirect
-
-from allauth.socialaccount.models import SocialAccount
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from dj_rest_auth.registration.views import SocialLoginView
-
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from accounts.models import User
-from core.tokens import TokenResponseSerializer
+from django.core.files.storage import default_storage
+
+from rest_framework.parsers import MultiPartParser
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from accounts.serializers import UserSerializers
+from core.tokens import get_user_id
 
 
-class Constants:
-    BASE_URL = getattr(settings, "BASE_URL")
+class UserInfoViews(RetrieveUpdateAPIView):
+    parser_classes = (MultiPartParser,)
+    serializer_class = UserSerializers
+    http_method_names = ["get", "patch"]
 
-    # kakao
-    REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY")
-    KAKAO_CALLBACK_URI = f"http://localhost:3000/kakao"
+    def get_object(self):
+        user = get_user_id(self.request)
+        return user
 
-    # google
-    GOOGLE_CALLBACK_URI = f"http://localhost:3000/google"
-    GOOGLE_CLIENT_ID = getattr(settings, "SOCIAL_AUTH_GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = getattr(settings, "SOCIAL_AUTH_GOOGLE_SECRET")
-    GOOGLE_SCOPE = " ".join(
-        [
-            "https://www.googleapis.com/auth/userinfo.email",
-        ]
-    )
-    # naver
-    NAVER_CALLBACK_URI = f"http://localhost:3000/naver"
-    NAVER_CLIENT_ID = getattr(settings, "SOCIAL_AUTH_NAVER_CLIENT_ID")
-    NAVER_CLIENT_SECRET = getattr(settings, "SOCIAL_AUTH_NAVER_SECRET")
+    @swagger_auto_schema(tags=["유저 정보"])
+    def get(self, request, *args, **kwargs):
+        """
+        유저 정보 조회
+        ---
+        """
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(tags=["유저 정보"])
+    def patch(self, request, *args, **kwargs):
+        """
+        유저 정보 부분 수정
+        ---
+        """
+        return super().patch(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.profile_img.path != "img/default/default_img.jpg":
+            default_storage.delete(instance.profile_img.path)
+        serializer.save()

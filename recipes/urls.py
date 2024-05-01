@@ -37,7 +37,7 @@ router.register(r"recipe-images", RecipeImageViewset, basename="recipe-images")
 # 라우터 URL을 urlpatterns에 추가
 urlpatterns = [
     path("", include(router.urls)),
-    path('recipes/like-toggle/', LikeToggleAPIView.as_view()),
-    path('recipes/bookmark-toggle/', BookmarkToggleAPIView.as_view()),
+    path("recipes/like-toggle/", LikeToggleAPIView.as_view()),
+    path("recipes/bookmark-toggle/", BookmarkToggleAPIView.as_view()),
     path("search", SearchRecipe.as_view()),
 ]
