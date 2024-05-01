@@ -1,11 +1,10 @@
-import json
-import requests
-from django.conf import settings
+from rest_framework_simplejwt.tokens import AccessToken
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from accounts.models import User
+
+from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
@@ -40,3 +39,21 @@ class TokenResponseSerializer(serializers.Serializer):
                 "refresh": self.get_refresh_token(),
             },
         }
+
+
+def get_user_id(request):
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header:
+        return JsonResponse({'error': 'Authorization header is missing'}, status=400)
+
+    try:
+        access_token = auth_header.split(" ")[1]
+        decoded = AccessToken(access_token)
+        user_id = decoded["user_id"]
+        user_instance = User.objects.get(id=user_id)
+        return user_instance
+    except AccessToken.DoesNotExist:
+        return JsonResponse({'error': 'Invalid access token'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

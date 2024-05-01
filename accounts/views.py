@@ -18,7 +18,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from accounts.models import User
-from accounts.tokens import TokenResponseSerializer
+from core.tokens import TokenResponseSerializer
 
 
 class Constants:

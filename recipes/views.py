@@ -7,7 +7,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from .models import FoodRecipes
-from accounts.functions import get_user_id
+from core.tokens import get_user_id
 
 class LikeToggleAPIView(APIView):
     @swagger_auto_schema(
