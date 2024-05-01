@@ -45,7 +45,7 @@ def get_user_id(request):
     auth_header = request.headers.get("Authorization")
 
     if not auth_header:
-        return JsonResponse({'error': 'Authorization header is missing'}, status=400)
+        return JsonResponse({"error": "Authorization header is missing"}, status=400)
 
     try:
         access_token = auth_header.split(" ")[1]
@@ -54,6 +54,6 @@ def get_user_id(request):
         user_instance = User.objects.get(id=user_id)
         return user_instance
     except AccessToken.DoesNotExist:
-        return JsonResponse({'error': 'Invalid access token'}, status=401)
+        return JsonResponse({"error": "Invalid access token"}, status=401)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)

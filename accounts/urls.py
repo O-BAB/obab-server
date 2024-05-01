@@ -1,19 +1,17 @@
 from django.urls import path
-from accounts.social_views.kakao_login import (
-    KakaoLoginView,
-    KakaoCallbackView,
-    KakaoLoginToDjango,
-)
-from accounts.social_views.google_login import (
+from accounts.social_login import (
     GoogleLoginView,
     GoogleCallbackView,
     GoogleLoginToDjango,
-)
-from accounts.social_views.naver_login import (
+    KakaoLoginView,
+    KakaoCallbackView,
+    KakaoLoginToDjango,
     NaverLoginView,
     NaverCallbackView,
     NaverLoginToDjango,
 )
+
+from .views import UserInfoViews
 
 
 urlpatterns = [
@@ -38,4 +36,5 @@ urlpatterns = [
         NaverLoginToDjango.as_view(),
         name="naver_login_to_django",
     ),
+    path("", UserInfoViews.as_view(), name="userinfo"),
 ]

@@ -1,16 +1,24 @@
 from drf_yasg.utils import swagger_auto_schema
 
+from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from recipes.permissions import IsOwnerOrReadOnly
+
 from core.tokens import get_user_id
 from recipes.models import FoodRecipes
 from recipes.serializer import FoodRecipesSerializer
-from core.viewsets import BaseRecipesViewSet
 
 
 # BroadcastRecipes
-class BroadcastRecipesViewSet(BaseRecipesViewSet):
+class BroadcastRecipesViewSet(viewsets.ModelViewSet):
     categoryCD = "broadcast_recipe"
     queryset = FoodRecipes.objects.filter(categoryCD=categoryCD)
     serializer_class = FoodRecipesSerializer
+    parser_classes = (MultiPartParser,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(categoryCD=self.categoryCD, user=get_user_id(self.request))
