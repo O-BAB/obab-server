@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
@@ -6,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .models import FoodRecipes
+from recipes.models import FoodRecipes, Ingredients
+from recipes.serializer import SearchRecipeSerializer
 from core.tokens import get_user_id
 
 
@@ -66,17 +69,6 @@ class BookmarkToggleAPIView(APIView):
             bookmarked = True
 
         return Response({"bookmarked": bookmarked}, status=status.HTTP_200_OK)
-
-
-from django.db.models import Count
-
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-
-from recipes.models import FoodRecipes, Ingredients
-from recipes.serializer import SearchRecipeSerializer
 
 
 class SearchRecipe(APIView):
