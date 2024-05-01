@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from users.serializers import UserSerializers
-from accounts.functions import get_user_id
+from core.tokens import get_user_id
 
 
 class UserInfoViews(RetrieveUpdateAPIView):

@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 
 from recipes.permissions import IsOwnerOrReadOnly, UserPostAccessPermission
-from accounts.functions import get_user_id
+from core.tokens import get_user_id
 from recipes.models import FoodRecipes
 
 

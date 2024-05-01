@@ -1,6 +1,6 @@
 from drf_yasg.utils import swagger_auto_schema
 
-from accounts.functions import get_user_id
+from core.tokens import get_user_id
 from recipes.models import FoodRecipes
 from recipes.serializer import FoodRecipesSerializer
 from core.viewsets import BaseRecipesViewSet
