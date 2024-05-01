@@ -11,10 +11,9 @@ from accounts.social_login import (
     NaverLoginToDjango,
 )
 
-from .views import UserInfoViews
+from .views import UserInfoViews, RegisterView, LoginView
 
-
-urlpatterns = [
+social_url = [
     path("kakao/login/", KakaoLoginView.as_view(), name="kakao_login"),
     path("kakao/callback/", KakaoCallbackView.as_view(), name="kakao_callback"),
     path(
@@ -36,5 +35,11 @@ urlpatterns = [
         NaverLoginToDjango.as_view(),
         name="naver_login_to_django",
     ),
+]
+
+urlpatterns = [
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
     path("", UserInfoViews.as_view(), name="userinfo"),
+    *social_url,
 ]
