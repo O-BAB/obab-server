@@ -10,6 +10,7 @@ from .viewsets.ingredients import IngredientsViewset
 from .viewsets.recipe_process import RecipeProcessViewset
 from .viewsets.convenience_items import ConvenienceItemsViewset
 from .viewsets.recipe_images import RecipeImageViewset
+from .views import SearchRecipe
 
 from .views import LikeToggleAPIView, BookmarkToggleAPIView
 
@@ -38,4 +39,5 @@ urlpatterns = [
     path("", include(router.urls)),
     path('recipes/like-toggle/', LikeToggleAPIView.as_view()),
     path('recipes/bookmark-toggle/', BookmarkToggleAPIView.as_view()),
+    path("search", SearchRecipe.as_view()),
 ]
