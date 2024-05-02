@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from core.tokens import get_user_id
+from core.tokens import CustomJWTAuthentication
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):

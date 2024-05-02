@@ -9,7 +9,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from recipes.models import RecipeProcess
 from recipes.permissions import UserPostAccessPermission
 from core.serializers import RecipeProcessSerializer
-from core.tokens import get_user_id
+from core.tokens import CustomJWTAuthentication
 from recipes.models import FoodRecipes
 
 
@@ -29,7 +29,7 @@ class RecipeProcessViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = get_user_id(self.request)
+        user = CustomJWTAuthentication().authenticate(self.request)
         instance = serializer.validated_data["foodrecipe"]
         post_id = instance.id
         post_user = FoodRecipes.objects.get(id=post_id).user

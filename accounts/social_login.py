@@ -8,7 +8,6 @@ from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
@@ -20,7 +19,8 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 from accounts.views import *
 from accounts.models import User
-from core.tokens import TokenResponseSerializer
+from core.tokens import CustomJWTAuthentication
+from core.responses import Response
 from core.constants import Constants
 
 
@@ -114,12 +114,8 @@ class GoogleCallbackView(APIView):
                 return JsonResponse(
                     {"err_msg": "failed to signin"}, status=accept_status
                 )
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
 
         except User.DoesNotExist:
@@ -133,12 +129,8 @@ class GoogleCallbackView(APIView):
                     {"err_msg": "failed to signup"}, status=accept_status
                 )
             user = User.objects.get(email=email)
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
 
 
@@ -237,12 +229,8 @@ class NaverCallbackView(APIView):
                 return JsonResponse(
                     {"err_msg": "failed to signin"}, status=accept_status
                 )
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
 
         except User.DoesNotExist:
@@ -254,12 +242,8 @@ class NaverCallbackView(APIView):
                     {"err_msg": "failed to signup"}, status=accept_status
                 )
             user = User.objects.get(email=email)
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
 
 
@@ -351,12 +335,8 @@ class KakaoCallbackView(APIView):
                 return JsonResponse(
                     {"err_msg": "failed to signin"}, status=accept_status
                 )
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
         except User.DoesNotExist:
             data = {"access_token": access_token, "code": code}
@@ -367,12 +347,8 @@ class KakaoCallbackView(APIView):
                     {"err_msg": "failed to signup1"}, status=accept_status
                 )
             user = User.objects.get(email=email)
-            serializer = TokenResponseSerializer(user)
-            data = serializer.to_representation(serializer)
-            res = Response(
-                data,
-                status=status.HTTP_200_OK,
-            )
+            token = CustomJWTAuthentication.create_token(user)
+            res = Response(data=token)
             return res
 
 

@@ -7,7 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from recipes.permissions import IsOwnerOrReadOnly
 from .serializers import CommentSerializer
-from core.tokens import get_user_id
+from core.tokens import CustomJWTAuthentication
 
 
 from .models import Comments
@@ -22,7 +22,7 @@ class CommentViewSet(
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=get_user_id(self.request))
+        serializer.save(user=CustomJWTAuthentication().authenticate(self.request))
 
     @swagger_auto_schema(operation_id="댓글 생성", tags=["댓글"])
     def create(self, request, *args, **kwargs):
