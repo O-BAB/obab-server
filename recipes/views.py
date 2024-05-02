@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 
 from recipes.models import FoodRecipes, Ingredients
 from recipes.serializer import SearchRecipeSerializer
-from core.tokens import get_user_id
+from core.tokens import CustomJWTAuthentication
 
 
 class LikeToggleAPIView(APIView):
@@ -30,7 +30,7 @@ class LikeToggleAPIView(APIView):
     def post(self, request):
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
-        user = get_user_id(self.request)
+        user = CustomJWTAuthentication().authenticate(self.request)
 
         if user in recipe.like.all():
             recipe.like.remove(user)
@@ -59,7 +59,7 @@ class BookmarkToggleAPIView(APIView):
     def post(self, request):
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
-        user = get_user_id(self.request)
+        user = CustomJWTAuthentication().authenticate(self.request)
 
         if user in recipe.bookmark.all():
             recipe.bookmark.remove(user)

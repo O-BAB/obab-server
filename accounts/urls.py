@@ -1,7 +1,5 @@
 from django.urls import path
 
-from rest_framework_simplejwt.views import TokenRefreshView
-
 from accounts.social_login import (
     GoogleLoginView,
     GoogleCallbackView,
@@ -13,7 +11,7 @@ from accounts.social_login import (
     NaverCallbackView,
     NaverLoginToDjango,
 )
-from .views import UserInfoViews, RegisterView, LoginView
+from .views import UserInfoViews, RegisterView, LoginView, TokenRefreshView
 
 social_url = [
     path("kakao/login/", KakaoLoginView.as_view(), name="kakao_login"),
@@ -42,7 +40,7 @@ social_url = [
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
-    path("", UserInfoViews.as_view(), name="userinfo"),
-    path("token/refresh/", TokenRefreshView.as_view()),
+    path("userinfo/", UserInfoViews.as_view(), name="userinfo"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     *social_url,
 ]

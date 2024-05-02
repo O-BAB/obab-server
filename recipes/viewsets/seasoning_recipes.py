@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from recipes.permissions import IsOwnerOrReadOnly
 
-from core.tokens import get_user_id
+from core.tokens import CustomJWTAuthentication
 from recipes.models import FoodRecipes
 from recipes.serializer import FoodRecipesSerializer
 
@@ -21,7 +21,10 @@ class SeasoningRecipesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(categoryCD=self.categoryCD, user=get_user_id(self.request))
+        serializer.save(
+            categoryCD=self.categoryCD,
+            user=CustomJWTAuthentication().authenticate(self.request),
+        )
 
     @swagger_auto_schema(tags=["양념 레시피"])
     def list(self, request, *args, **kwargs):
