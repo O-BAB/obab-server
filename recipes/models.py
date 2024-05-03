@@ -54,7 +54,9 @@ class FoodRecipes(TimeStampedModel, models.Model):
 
 
 class Ingredients(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="recipe_ingredients"
+    )
     type = models.CharField(max_length=10)
     name = models.CharField(max_length=50)
     count = models.SmallIntegerField()
@@ -63,12 +65,16 @@ class Ingredients(models.Model):
 
 
 class RecipeProcess(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="recipe_process"
+    )
     content = models.TextField()
 
 
 class ConvenienceItems(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="convenience_items"
+    )
     name = models.CharField(max_length=50)
     price = models.IntegerField()
 
@@ -79,6 +85,8 @@ class RecipeImage(models.Model):
         ("반영", "반영"),
     )
 
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE, default=None)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, default=None, related_name="recipe_image"
+    )
     image = models.ImageField(upload_to=upload_post_image_directory)
     state = models.CharField(max_length=10, choices=STATUS_CHOICES, default="임시저장")
