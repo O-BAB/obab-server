@@ -34,6 +34,16 @@
         "code": 1007,
         "ko": "유효하지 않은 토큰",
         "en": "TOKEN_INVALID"
+      },
+      "NOT_FOUND_TOKEN": {
+        "code": 1008,
+        "ko": "토큰이 없음",
+        "en": "NOT_FOUND_TOKEN"
+      },
+      "AUTHORIZATION_HEADER_NOT_FOUND": {
+        "code": 1009,
+        "ko": "승인 헤더 누락",
+        "en": "AUTHORIZATION_HEADER_NOT_FOUND"
       }
     }
   }
