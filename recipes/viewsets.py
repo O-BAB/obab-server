@@ -15,7 +15,7 @@ from recipes.permissions import IsOwnerOrReadOnly
 from recipes.models import FoodRecipes
 from recipes.serializer import (
     basicCreateUpdateSerializer,
-    # ConvenienceCreateUpdateSerializer,
+    ConvenienceCreateUpdateSerializer,
     # ConvenienceRecipesListSerializer,
     # FoodRecipesListSerializer,
 )
@@ -44,9 +44,7 @@ class basicCreateUpdateView(APIView):
             serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
-            raise_exception(
-                code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-            )
+            raise_exception(code=(0, serializer.errors))
 
     @swagger_auto_schema(
         operation_id="일반 레시피 수정",
@@ -77,9 +75,57 @@ class basicCreateUpdateView(APIView):
         if serializer.is_valid():
             return Response(data=serializer.data)
         else:
+            raise_exception(code=(0, serializer.errors))
+
+
+class convenienceCreateUpdateView(APIView):
+    @swagger_auto_schema(
+        operation_id="편의점 레시피 생성",
+        tags=["레시피"],
+        request_body=ConvenienceCreateUpdateSerializer,
+    )
+    def post(self, request):
+        """
+        편의점 레시피 생성
+        """
+        serializer = ConvenienceCreateUpdateSerializer(data=request.data)
+        user = CustomJWTAuthentication().authenticate(self.request)
+        if serializer.is_valid():
+            serializer.save(user=user[0])
+            return Response(data=serializer.data)
+        else:
+            raise_exception(code=(0, serializer.errors))
+
+    @swagger_auto_schema(
+        operation_id="편의점 레시피 수정",
+        tags=["레시피"],
+        manual_parameters=[
+            openapi.Parameter(
+                "id",
+                in_=openapi.IN_QUERY,
+                description="게시물 id.",
+                type=openapi.TYPE_STRING,
+                required=True,
+            ),
+        ],
+        request_body=ConvenienceCreateUpdateSerializer,
+    )
+    def put(self, request):
+        """
+        편의점 레시피 수정
+        """
+        recipe_id = request.GET.get("id")
+        try:
+            recipe = FoodRecipes.objects.get(pk=recipe_id)
+        except FoodRecipes.DoesNotExist:
             raise_exception(
                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
             )
+        serializer = ConvenienceCreateUpdateSerializer(recipe, data=request.data)
+        if serializer.is_valid():
+            return Response(data=serializer.data)
+        else:
+            raise_exception(code=(0, serializer.errors))
 
 
 # class RecipeViewset(mixins.ListModelMixin,
@@ -156,45 +202,3 @@ class basicCreateUpdateView(APIView):
 
 #         return Response(data="성공적으로 삭제")
 #         # return super().destroy(request, *args, **kwargs)
-
-
-# class convenienceCreateUpdateView(APIView):
-#     @swagger_auto_schema(
-#         operation_id="편의점 레시피 생성",
-#         tags=["레시피"],
-#         request_body=ConvenienceCreateUpdateSerializer,
-#     )
-#     def post(self, request):
-#         """
-#         편의점 레시피 생성
-#         """
-#         serializer = ConvenienceCreateUpdateSerializer(data=request.data)
-#         user = CustomJWTAuthentication().authenticate(self.request)
-#         if serializer.is_valid():
-#             serializer.save(user=user[0])
-#             return Response(data=serializer.data)
-#         else:
-#             raise_exception(
-#                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-#             )
-
-#     @swagger_auto_schema(
-#         operation_id="편의점 레시피 수정",
-#         tags=["레시피"],
-#         request_body=ConvenienceCreateUpdateSerializer,
-#     )
-#     def patch(self, request, recipe_id):
-#         """
-#         편의점 레시피 수정
-#         """
-#         queryset = self.get_queryset(recipe_id)
-#         serializer_class = self.get_serializer_class(queryset.categoryCD)
-#         serializer = serializer_class(queryset, data=request.data, partial=True)
-
-#         if serializer.is_valid():
-#             serializer.save
-#         else:
-#             raise_exception(
-#                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-#             )
-#         return Response(data=serializer.data)
