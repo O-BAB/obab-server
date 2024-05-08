@@ -33,6 +33,11 @@ class basicCreateUpdateView(APIView):
     def post(self, request):
         """
         일반 레시피 생성
+        ---
+        food_recipe, 음식 레시피
+        broadcast_recipe, 방송 레시피
+        seasoning_recipe, 양념 레시피
+        cooking_tip, 요리 TIP
         """
         serializer = basicCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)
@@ -63,6 +68,11 @@ class basicCreateUpdateView(APIView):
     def put(self, request):
         """
         일반 레시피 수정
+        ---
+        food_recipe, 음식 레시피
+        broadcast_recipe, 방송 레시피
+        seasoning_recipe, 양념 레시피
+        cooking_tip, 요리 TIP
         """
         recipe_id = request.GET.get("id")
         try:
@@ -87,6 +97,8 @@ class convenienceCreateUpdateView(APIView):
     def post(self, request):
         """
         편의점 레시피 생성
+        ---
+        convenience_store_combination, 편의점 꿀 조합
         """
         serializer = ConvenienceCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)
@@ -113,6 +125,8 @@ class convenienceCreateUpdateView(APIView):
     def put(self, request):
         """
         편의점 레시피 수정
+        ---
+        convenience_store_combination, 편의점 꿀 조합
         """
         recipe_id = request.GET.get("id")
         try:
