@@ -6,9 +6,11 @@ from comments.serializers import CommentSerializer
 
 
 class RecipeProcessSerializer(serializers.ModelSerializer):
+    process_id = serializers.CharField(source="id", read_only=True)
+
     class Meta:
         model = RecipeProcess
-        fields = "__all__"
+        fields = ["process_id", "content"]
 
 
 class RecipeImageSerializer(serializers.ModelSerializer):
@@ -18,33 +20,28 @@ class RecipeImageSerializer(serializers.ModelSerializer):
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
+    ingredients_id = serializers.CharField(source="id", read_only=True)
+
     class Meta:
         model = Ingredients
-        fields = "__all__"
+        fields = ["ingredients_id", "type", "name", "count", "unit", "etc"]
 
 
 class ConvenienceItemsSerializer(serializers.ModelSerializer):
+    convenienceItems_id = serializers.CharField(source="id", read_only=True)
+
     class Meta:
         model = ConvenienceItems
         fields = "__all__"
 
 
-class FoodrecipeSerializer(serializers.ModelSerializer):
-    tot_price = serializers.ReadOnlyField()
+class basicCreateUpdateSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
-
-    class Meta:
-        model = FoodRecipes
-        fields = "__all__"
-
-
-class FoodRecipesDetailSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+    # thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
     like_count = serializers.SerializerMethodField()
     bookmark_count = serializers.SerializerMethodField()
-    recipe_ingredients = IngredientsSerializer(many=True, read_only=True)
-    recipe_process = RecipeProcessSerializer(many=True, read_only=True)
+    recipe_ingredients = IngredientsSerializer(many=True)
+    recipe_process = RecipeProcessSerializer(many=True)
     recipe_image = RecipeImageSerializer(many=True, read_only=True)
     recipe_comments = CommentSerializer(many=True, read_only=True)
 
@@ -55,7 +52,7 @@ class FoodRecipesDetailSerializer(serializers.ModelSerializer):
             "user",
             "title",
             "recipe_ingredients",
-            "thumnail_url",
+            # "thumnail_url",
             "video",
             "intro",
             "time",
@@ -75,101 +72,133 @@ class FoodRecipesDetailSerializer(serializers.ModelSerializer):
         return obj.bookmark.count()
 
     def create(self, validated_data):
-        print(123)
-        print(validated_data)
+        ingredients_data = validated_data.pop("recipe_ingredients")
+        process_datas = validated_data.pop("recipe_process")
+
+        recipe = FoodRecipes.objects.create(**validated_data)
+        for ingredient_data in ingredients_data:
+            Ingredients.objects.create(foodrecipe=recipe, **ingredient_data)
+        for process_data in process_datas:
+            RecipeProcess.objects.create(foodrecipe=recipe, **process_data)
+
+        return recipe
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop("recipe_ingredients")
+        process_datas = validated_data.pop("recipe_process")
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        instance.recipe_ingredients.all().delete()
+        instance.recipe_process.all().delete()
+
+        # 새로운 재료 및 과정 추가
+        for ingredient_data in ingredients_data:
+            Ingredients.objects.create(foodrecipe=instance, **ingredient_data)
+        for process_data in process_datas:
+            RecipeProcess.objects.create(foodrecipe=instance, **process_data)
+
+        return instance
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        return response
 
 
-class FoodRecipesListSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
+# class FoodRecipesListSerializer(serializers.ModelSerializer):
+#     user = serializers.StringRelatedField()
+#     thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+#     like_count = serializers.SerializerMethodField()
+#     bookmark_count = serializers.SerializerMethodField()
 
-    class Meta:
-        model = FoodRecipes
-        fields = [
-            "categoryCD",
-            "user",
-            "title",
-            "thumnail_url",
-            "intro",
-            "like_count",
-            "bookmark_count",
-        ]
+#     class Meta:
+#         model = FoodRecipes
+#         fields = [
+#             "categoryCD",
+#             "user",
+#             "title",
+#             "thumnail_url",
+#             "intro",
+#             "like_count",
+#             "bookmark_count",
+#         ]
 
-    def get_like_count(self, obj):
-        return obj.like.count()
+#     def get_like_count(self, obj):
+#         return obj.like.count()
 
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
-
-
-class ConvenienceRecipesDetailSerializer(serializers.ModelSerializer):
-    convenience_items = ConvenienceItemsSerializer(many=True, read_only=True)
-    recipe_process = RecipeProcessSerializer(many=True, read_only=True)
-    recipe_image = RecipeImageSerializer(many=True, read_only=True)
-    recipe_comments = CommentSerializer(many=True, read_only=True)
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
-    tot_price = serializers.ReadOnlyField()
-
-    class Meta:
-        model = FoodRecipes
-        fields = [
-            "id",
-            "categoryCD",
-            "user",
-            "title",
-            "tot_price",
-            "thumnail_url",
-            "video",
-            "intro",
-            "time",
-            "people_num",
-            "difficulty",
-            "recipe_image",
-            "recipe_process",
-            "like_count",
-            "bookmark_count",
-            "convenience_items",
-            "recipe_comments",
-        ]
-
-    def get_like_count(self, obj):
-        return obj.like.count()
-
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
+#     def get_bookmark_count(self, obj):
+#         return obj.bookmark.count()
 
 
-class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
-    tot_price = serializers.ReadOnlyField()
+# class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
+#     user = serializers.StringRelatedField()
+#     thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+#     like_count = serializers.SerializerMethodField()
+#     bookmark_count = serializers.SerializerMethodField()
+#     tot_price = serializers.ReadOnlyField()
+#     convenience_items = ConvenienceItemsSerializer(many=True, read_only=True)
+#     recipe_process = RecipeProcessSerializer(many=True, read_only=True)
+#     recipe_image = RecipeImageSerializer(many=True, read_only=True)
+#     recipe_comments = CommentSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = FoodRecipes
-        fields = [
-            "id",
-            "categoryCD",
-            "user",
-            "title",
-            "tot_price",
-            "thumnail_url",
-            "intro",
-            "like_count",
-            "bookmark_count",
-        ]
+#     class Meta:
+#         model = FoodRecipes
+#         fields = [
+#             "id",
+#             "categoryCD",
+#             "user",
+#             "title",
+#             "tot_price",
+#             "thumnail_url",
+#             "video",
+#             "intro",
+#             "time",
+#             "people_num",
+#             "difficulty",
+#             "recipe_image",
+#             "recipe_process",
+#             "like_count",
+#             "bookmark_count",
+#             "convenience_items",
+#             "recipe_comments",
+#         ]
 
-    def get_like_count(self, obj):
-        return obj.like.count()
+#     def get_like_count(self, obj):
+#         return obj.like.count()
 
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
+#     def get_bookmark_count(self, obj):
+#         return obj.bookmark.count()
+
+
+# class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
+#     user = serializers.StringRelatedField()
+#     thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+#     like_count = serializers.SerializerMethodField()
+#     bookmark_count = serializers.SerializerMethodField()
+#     tot_price = serializers.ReadOnlyField()
+
+#     class Meta:
+#         model = FoodRecipes
+#         fields = [
+#             "id",
+#             "categoryCD",
+#             "user",
+#             "title",
+#             "tot_price",
+#             "thumnail_url",
+#             "intro",
+#             "like_count",
+#             "bookmark_count",
+#         ]
+
+#     def get_like_count(self, obj):
+#         return obj.like.count()
+
+#     def get_bookmark_count(self, obj):
+#         return obj.bookmark.count()
 
 
 class SearchRecipeSerializer(serializers.ModelSerializer):

@@ -10,12 +10,7 @@ class CustomJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            raise_exception(
-                code=SystemCodeManager.get_message(
-                    "auth_code", "AUTHORIZATION_HEADER_NOT_FOUND"
-                )
-            )
-
+            return None
         raw_token = self.get_raw_token(header)
         if raw_token is None:
             raise_exception(
