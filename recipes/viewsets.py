@@ -3,10 +3,10 @@ from drf_yasg import openapi
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from core.tokens import CustomJWTAuthentication
+from core.paginations import CustomPagination
 from core.constants import SystemCodeManager
 from core.exceptions import raise_exception
 from core.responses import Response
@@ -16,8 +16,8 @@ from recipes.models import FoodRecipes
 from recipes.serializer import (
     basicCreateUpdateSerializer,
     ConvenienceCreateUpdateSerializer,
-    # ConvenienceRecipesListSerializer,
-    # FoodRecipesListSerializer,
+    ConvenienceRecipesListSerializer,
+    FoodRecipesListSerializer,
 )
 
 
@@ -142,77 +142,90 @@ class convenienceCreateUpdateView(APIView):
             raise_exception(code=(0, serializer.errors))
 
 
-# class RecipeViewset(mixins.ListModelMixin,
-#                     mixins.RetrieveModelMixin,
-#                     mixins.DestroyModelMixin,
-#                     viewsets.GenericViewSet):
-#     parser_classes = [MultiPartParser]
+class RecipeViewset(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    pagination_class = CustomPagination
 
+    def get_serializer_class(self, categoryCD):
+        if categoryCD == "convenience_store_combination":
+            return ConvenienceRecipesListSerializer
+        return FoodRecipesListSerializer
 
-#     def get_serializer_class(self, categoryCD):
-#         if categoryCD == "convenience_store_combination":
-#             return ConvenienceRecipesListSerializer
-#         return FoodRecipesListSerializer
+    def get_queryset(self, category_cd):
+        return FoodRecipes.objects.filter(categoryCD=category_cd)
 
-#     def get_queryset(self, category_cd):
-#         return FoodRecipes.objects.filter(categoryCD=category_cd)
+    @swagger_auto_schema(
+        operation_id="레시피 목록",
+        tags=["레시피"],
+        manual_parameters=[
+            openapi.Parameter(
+                "categoryCD",
+                in_=openapi.IN_QUERY,
+                description="카테고리를 선택하세요.",
+                type=openapi.TYPE_STRING,
+                enum=[
+                    "food_recipe",
+                    "broadcast_recipe",
+                    "convenience_store_combination",
+                    "seasoning_recipe",
+                    "cooking_tip",
+                ],
+                required=True,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        """
+        카테고리별 목록 보기
+        """
+        category_cd = request.GET.get("categoryCD")
+        queryset = self.get_queryset(category_cd)
+        serializer_class = self.get_serializer_class(category_cd)
+        serializer = serializer_class(queryset, many=True)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = serializer_class(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-#     @swagger_auto_schema(
-#         operation_id="레시피 목록",
-#         tags=["레시피"],
-#         manual_parameters=[
-#             openapi.Parameter(
-#                 "categoryCD",
-#                 in_=openapi.IN_QUERY,
-#                 description="카테고리를 선택하세요.",
-#                 type=openapi.TYPE_STRING,
-#                 enum=[
-#                     "food_recipe",
-#                     "broadcast_recipe",
-#                     "convenience_store_combination",
-#                     "seasoning_recipe",
-#                     "cooking_tip",
-#                 ],
-#                 required=True,
-#             ),
-#         ],
-#     )
-#     def list(self, request, *args, **kwargs):
-#         """
-#         카테고리별 목록 보기
-#         """
-#         category_cd = request.GET.get("categoryCD")
-#         queryset = self.get_queryset(category_cd)
-#         serializer_class = self.get_serializer_class(category_cd)
-#         # serializer = serializer_class(queryset, many=True)
-#         # return Response(data=serializer.data)
-#         return super().list(request, *args, **kwargs)
+        serializer = serializer_class(queryset, many=True)
+        return Response(data=serializer.data)
 
-#     @swagger_auto_schema(
-#         operation_id="레시피 상세 보기",
-#         tags=["레시피"],
-#     )
-#     def retrieve(self, request, *args, **kwargs):
-#         """
-#         레시피를 상세 조회합니다.
-#         """
-#         recipe_id = kwargs.GET.get('id')
-#         queryset = FoodRecipes.objects.get(id=recipe_id)
-#         serializer_class = self.get_serializer_class(queryset.categoryCD)
-#         # serializer = serializer_class(queryset)
-#         # return Response(data=serializer.data)
-#         return super().retrieve(request, *args, **kwargs)
+    @swagger_auto_schema(
+        operation_id="레시피 상세 보기",
+        tags=["레시피"],
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """
+        레시피를 상세 조회
+        """
+        recipe_id = kwargs.get("pk")
+        try:
+            queryset = FoodRecipes.objects.get(id=recipe_id)
+        except:
+            raise_exception(
+                code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
+            )
+        if queryset.categoryCD == "convenience_store_combination":
+            serializer_class = ConvenienceCreateUpdateSerializer
+        else:
+            serializer_class = basicCreateUpdateSerializer
+        serializer = serializer_class(queryset)
+        return Response(data=serializer.data)
 
-#     @swagger_auto_schema(
-#         operation_id="레시피 삭제",
-#         tags=["레시피"],
-#     )
-#     def destroy(self, request, *args, **kwargs):
-#         """
-#         레시피 삭제
-#         """
-#         recipe_id = kwargs.GET.get('id')
-#         queryset = FoodRecipes.objects.get(id=recipe_id)
+    @swagger_auto_schema(
+        operation_id="레시피 삭제",
+        tags=["레시피"],
+    )
+    def destroy(self, request, *args, **kwargs):
+        """
+        레시피 삭제
+        """
+        recipe_id = kwargs.get("pk")
+        recipe = FoodRecipes.objects.get(id=recipe_id)
+        recipe.delete()
 
-#         return Response(data="성공적으로 삭제")
-#         # return super().destroy(request, *args, **kwargs)
+        return Response(data="성공적으로 삭제")
