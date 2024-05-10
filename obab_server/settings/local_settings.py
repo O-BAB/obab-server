@@ -12,6 +12,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
 # env
 KAKAO_REST_API_KEY = env("kakao_rest_api_key")
