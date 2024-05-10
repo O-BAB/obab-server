@@ -1,37 +1,31 @@
 from django.urls import path, include
-
 from rest_framework.routers import DefaultRouter
+from .viewsets import (
+    basicCreateUpdateView,
+    convenienceCreateUpdateView,
+    RecipeViewset,
+    ImageUploadView,
+)
 
-from .viewsets.basicfood_recipes import FoodRecipesViewSet
-from .viewsets.convenience_recipes import ConvenienceRecipesViewSet
-from .viewsets.broadcast_recipes import BroadcastRecipesViewSet
-from .viewsets.seasoning_recipes import SeasoningRecipesViewSet
-from .viewsets.ingredients import IngredientsViewset
-from .viewsets.recipe_process import RecipeProcessViewset
-from .viewsets.convenience_items import ConvenienceItemsViewset
-from .viewsets.recipe_images import RecipeImageViewset
+from .views import SearchRecipe
+
+from .views import LikeToggleAPIView, BookmarkToggleAPIView
+
+app_name = "recipes"
 
 router = DefaultRouter()
-router.register(r"food-recipes", FoodRecipesViewSet, basename="food-recipes")
-router.register(
-    r"convenience-recipes", ConvenienceRecipesViewSet, basename="convenience-recipes"
-)
-router.register(
-    r"broadcast-recipes", BroadcastRecipesViewSet, basename="broadcast-recipes"
-)
-router.register(
-    r"seasoning-recipes", SeasoningRecipesViewSet, basename="seasoning_recipe"
-)
-router.register(
-    r"recipes-ingredients", IngredientsViewset, basename="recipe-ingredients"
-)
-router.register(r"recipes-process", RecipeProcessViewset, basename="recipe-process")
-router.register(
-    r"convenience-items", ConvenienceItemsViewset, basename="convenience-items"
-)
-router.register(r"recipe-images", RecipeImageViewset, basename="recipe-images")
+router.register(r"food-recipes", RecipeViewset, basename="foodrecipe")
 
-# 라우터 URL을 urlpatterns에 추가
 urlpatterns = [
-    path("", include(router.urls)),
+    path("recipes/basic", basicCreateUpdateView.as_view(), name="basic-recipes"),
+    path(
+        "recipes/convenience",
+        convenienceCreateUpdateView.as_view(),
+        name="convenience-recipes",
+    ),
+    path("recipes/images", ImageUploadView.as_view(), name="recipe-images"),
+    path("recipes/", include(router.urls)),
+    path("recipes/like-toggle/", LikeToggleAPIView.as_view()),
+    path("recipes/bookmark-toggle/", BookmarkToggleAPIView.as_view()),
+    path("search", SearchRecipe.as_view()),
 ]

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "recipes",
     "comments",
     "menu",
-    "users",
 ]
 
 MIDDLEWARE = [
@@ -131,7 +130,8 @@ MEDIA_URL = "/media/"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
 }
 
 # djangorestframework-simplejwt
@@ -150,6 +150,8 @@ SITE_ID = 1
 SWAGGER_SETTINGS = {
     "DEFAULT_INFO": "obab.urls.api_info",
     "USE_SESSION_AUTH": False,
+    "persistAuthorization": True,
+    "PERSIST_AUTH": True,
     "VALIDATOR_URL": None,
     "SECURITY_DEFINITIONS": {
         "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}

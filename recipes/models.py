@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import User
 from core.models import TimeStampedModel
 
-from core.functions import upload_thumnail_directory, upload_post_image_directory
+from core.functions import upload_thumnail_directory, upload_image_directory
 
 
 CATEGORYCDS = [
@@ -33,9 +33,7 @@ class FoodRecipes(TimeStampedModel, models.Model):
     )
     title = models.CharField(max_length=255)
     tot_price = models.IntegerField(blank=True, null=True)
-    thumnail = models.ImageField(
-        blank=True, null=True, upload_to=upload_thumnail_directory
-    )
+    thumnail = models.TextField(blank=True, null=True)
     video = models.URLField(blank=True, null=True)
     intro = models.CharField(max_length=255, blank=True, null=True)
     time = models.TimeField(blank=True, null=True)
@@ -54,7 +52,9 @@ class FoodRecipes(TimeStampedModel, models.Model):
 
 
 class Ingredients(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="recipe_ingredients"
+    )
     type = models.CharField(max_length=10)
     name = models.CharField(max_length=50)
     count = models.SmallIntegerField()
@@ -63,12 +63,16 @@ class Ingredients(models.Model):
 
 
 class RecipeProcess(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="recipe_process"
+    )
     content = models.TextField()
 
 
 class ConvenienceItems(models.Model):
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="convenience_items"
+    )
     name = models.CharField(max_length=50)
     price = models.IntegerField()
 
@@ -78,7 +82,19 @@ class RecipeImage(models.Model):
         ("임시저장", "임시저장"),
         ("반영", "반영"),
     )
-
-    foodrecipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE, default=None)
-    image = models.ImageField(upload_to=upload_post_image_directory)
+    foodrecipe = models.ForeignKey(
+        FoodRecipes,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="recipe_image",
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user_image",
+        blank=True,
+        null=True,
+    )
+    image = models.ImageField(upload_to=upload_image_directory)
     state = models.CharField(max_length=10, choices=STATUS_CHOICES, default="임시저장")

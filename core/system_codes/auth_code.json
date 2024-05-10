@@ -1,0 +1,49 @@
+{
+    "SYSTEM_CODE": {
+      "EMAIL_ALREADY": {
+        "code": 1001,
+        "ko": "이미 등록된 이메일",
+        "en": "EMAIL_ALREADY"
+      },
+      "PASSWORD_NOT_MATCH": {
+        "code": 1002,
+        "ko": "패스워드가 일치하지 않음",
+        "en": "PASSWORD_NOT_MATCH"
+      },
+      "USER_NOT_FOUND": {
+        "code": 1003,
+        "ko": "사용자를 찾을 수 없음",
+        "en": "USER_NOT_FOUND"
+      },
+      "USER_INVALID_PW": {
+        "code": 1004,
+        "ko": "유효하지 않은 비밀번호",
+        "en": "USER_INVALID_PW"
+      },
+      "USER_NOT_ACTIVE": {
+        "code": 1005,
+        "ko": "비활성화된 사용자",
+        "en": "USER_NOT_ACTIVE"
+      },
+      "TOKEN_EXPIRED": {
+        "code": 1006,
+        "ko": "토큰의 유효 기간 만료",
+        "en": "TOKEN_EXPIRED"
+      },
+      "TOKEN_INVALID": {
+        "code": 1007,
+        "ko": "유효하지 않은 토큰",
+        "en": "TOKEN_INVALID"
+      },
+      "NOT_FOUND_TOKEN": {
+        "code": 1008,
+        "ko": "토큰이 없음",
+        "en": "NOT_FOUND_TOKEN"
+      },
+      "AUTHORIZATION_HEADER_NOT_FOUND": {
+        "code": 1009,
+        "ko": "승인 헤더 누락",
+        "en": "AUTHORIZATION_HEADER_NOT_FOUND"
+      }
+    }
+  }

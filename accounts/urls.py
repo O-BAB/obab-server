@@ -1,22 +1,19 @@
 from django.urls import path
-from accounts.social_views.kakao_login import (
-    KakaoLoginView,
-    KakaoCallbackView,
-    KakaoLoginToDjango,
-)
-from accounts.social_views.google_login import (
+
+from accounts.social_login import (
     GoogleLoginView,
     GoogleCallbackView,
     GoogleLoginToDjango,
-)
-from accounts.social_views.naver_login import (
+    KakaoLoginView,
+    KakaoCallbackView,
+    KakaoLoginToDjango,
     NaverLoginView,
     NaverCallbackView,
     NaverLoginToDjango,
 )
+from .views import UserInfoViews, RegisterView, LoginView, TokenRefreshView
 
-
-urlpatterns = [
+social_url = [
     path("kakao/login/", KakaoLoginView.as_view(), name="kakao_login"),
     path("kakao/callback/", KakaoCallbackView.as_view(), name="kakao_callback"),
     path(
@@ -38,4 +35,12 @@ urlpatterns = [
         NaverLoginToDjango.as_view(),
         name="naver_login_to_django",
     ),
+]
+
+urlpatterns = [
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("userinfo/", UserInfoViews.as_view(), name="userinfo"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    *social_url,
 ]

@@ -1,0 +1,9 @@
+{
+    "SYSTEM_CODE": {
+      "BOARD_INVALID": {
+        "code": 2001,
+        "ko": "존재하지 않는 게시물",
+        "en": "BOARD_INVALID"
+      }
+    }
+  }

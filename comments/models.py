@@ -6,7 +6,9 @@ from core.models import TimeStampedModel
 
 class Comments(TimeStampedModel, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(FoodRecipes, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        FoodRecipes, on_delete=models.CASCADE, related_name="recipe_comments"
+    )
     text = models.CharField(max_length=255)
     root = models.ForeignKey(
         "self",
