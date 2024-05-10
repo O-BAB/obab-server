@@ -53,6 +53,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodRecipes
         fields = [
+            "id",
             "categoryCD",
             "user",
             "title",
@@ -78,7 +79,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
 
     def image_split(self, media_url, recipe):
         try:
-            image = RecipeImage.objects.get(image=media_url)
+            image = RecipeImage.objects.get(image=media_url.replace("/media/", ""))
             image.foodrecipe = recipe
             image.state = "반영"
             image.save()
@@ -119,7 +120,6 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         RecipeImage.objects.filter(foodrecipe_id=instance.id).update(
             foodrecipe_id=None, state="반영"
         )
-
         for ingredient_data in ingredients_data:
             Ingredients.objects.create(foodrecipe=instance, **ingredient_data)
         for process_data in process_datas:
@@ -130,10 +130,6 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         self.image_split(media_url=thumnail_url, recipe=instance)
         RecipeImage.objects.filter(foodrecipe_id=None, state="반영").delete()
         return instance
-
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        return response
 
 
 class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
@@ -175,7 +171,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
 
     def image_split(self, media_url, recipe):
         try:
-            image = RecipeImage.objects.get(image=media_url)
+            image = RecipeImage.objects.get(image=media_url.replace("/media/", ""))
             image.foodrecipe = recipe
             image.state = "반영"
             image.save()

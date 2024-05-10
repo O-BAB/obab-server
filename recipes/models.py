@@ -33,7 +33,7 @@ class FoodRecipes(TimeStampedModel, models.Model):
     )
     title = models.CharField(max_length=255)
     tot_price = models.IntegerField(blank=True, null=True)
-    thumnail = models.CharField(blank=True, null=True)
+    thumnail = models.TextField(blank=True, null=True)
     video = models.URLField(blank=True, null=True)
     intro = models.CharField(max_length=255, blank=True, null=True)
     time = models.TimeField(blank=True, null=True)

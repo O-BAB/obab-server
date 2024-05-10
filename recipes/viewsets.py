@@ -86,7 +86,9 @@ class basicCreateUpdateView(APIView):
                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
             )
         serializer = basicCreateUpdateSerializer(recipe, data=request.data)
+        user = CustomJWTAuthentication().authenticate(request)
         if serializer.is_valid():
+            serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
             raise_exception(code=(0, serializer.errors))
