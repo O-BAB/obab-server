@@ -9,7 +9,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from recipes.models import FoodRecipes, Ingredients
-from recipes.serializer import SearchRecipeSerializer
+from recipes.serializers import SearchRecipeSerializer
 from core.tokens import CustomJWTAuthentication
 
 

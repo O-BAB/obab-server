@@ -1,9 +1,12 @@
+from django.core.files.storage import default_storage
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.parsers import MultiPartParser
 
 from core.tokens import CustomJWTAuthentication
 from core.paginations import CustomPagination
@@ -13,11 +16,12 @@ from core.responses import Response
 
 from recipes.permissions import IsOwnerOrReadOnly
 from recipes.models import FoodRecipes
-from recipes.serializer import (
+from recipes.serializers import (
     basicCreateUpdateSerializer,
     ConvenienceCreateUpdateSerializer,
     ConvenienceRecipesListSerializer,
     FoodRecipesListSerializer,
+    ImageUploadSerializer,
 )
 
 
@@ -89,6 +93,8 @@ class basicCreateUpdateView(APIView):
 
 
 class convenienceCreateUpdateView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
     @swagger_auto_schema(
         operation_id="편의점 레시피 생성",
         tags=["레시피"],
@@ -101,7 +107,8 @@ class convenienceCreateUpdateView(APIView):
         convenience_store_combination, 편의점 꿀 조합
         """
         serializer = ConvenienceCreateUpdateSerializer(data=request.data)
-        user = CustomJWTAuthentication().authenticate(self.request)
+        user = CustomJWTAuthentication().authenticate(request)
+
         if serializer.is_valid():
             serializer.save(user=user[0])
             return Response(data=serializer.data)
@@ -136,7 +143,10 @@ class convenienceCreateUpdateView(APIView):
                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
             )
         serializer = ConvenienceCreateUpdateSerializer(recipe, data=request.data)
+        user = CustomJWTAuthentication().authenticate(request)
+
         if serializer.is_valid():
+            serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
             raise_exception(code=(0, serializer.errors))
@@ -149,13 +159,18 @@ class RecipeViewset(
     viewsets.GenericViewSet,
 ):
     pagination_class = CustomPagination
+    swagger_fake_view = False
 
-    def get_serializer_class(self, categoryCD):
+    def get_serializer_class(self, categoryCD=None):
+        if getattr(self, "swagger_fake_view", False) or categoryCD is None:
+            return FoodRecipesListSerializer
         if categoryCD == "convenience_store_combination":
             return ConvenienceRecipesListSerializer
         return FoodRecipesListSerializer
 
-    def get_queryset(self, category_cd):
+    def get_queryset(self, category_cd=None):
+        if getattr(self, "swagger_fake_view", False) or category_cd is None:
+            return FoodRecipes.objects.none()
         return FoodRecipes.objects.filter(categoryCD=category_cd)
 
     @swagger_auto_schema(
@@ -185,7 +200,7 @@ class RecipeViewset(
         category_cd = request.GET.get("categoryCD")
         queryset = self.get_queryset(category_cd)
         serializer_class = self.get_serializer_class(category_cd)
-        serializer = serializer_class(queryset, many=True)
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = serializer_class(page, many=True)
@@ -229,3 +244,27 @@ class RecipeViewset(
         recipe.delete()
 
         return Response(data="성공적으로 삭제")
+
+
+class ImageUploadView(APIView):
+    authentication_classes = [CustomJWTAuthentication]
+    parser_classes = (MultiPartParser,)
+    permission_classes = []
+
+    @swagger_auto_schema(
+        tags=["레시피 이미지 업로드"],
+        request_body=ImageUploadSerializer,
+    )
+    def post(self, request):
+        """
+        레시피 이미지 생성
+        ---
+        """
+        serializer = ImageUploadSerializer(data=request.data)
+        user = CustomJWTAuthentication().authenticate(self.request)[0]
+
+        if serializer.is_valid():
+            serializer.save(user=user, state="임시저장")
+            return Response(data=serializer.data)
+        else:
+            raise_exception(code=(0, serializer.errors))
