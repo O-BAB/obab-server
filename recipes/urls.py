@@ -1,8 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .viewsets import (
-    basicCreateUpdateView,
-    convenienceCreateUpdateView,
+    basicCreateView,
+    basicUpdateView,
+    convenienceCreateView,
+    convenienceUpdateView,
     RecipeViewset,
     ImageUploadView,
 )
@@ -17,11 +19,17 @@ router = DefaultRouter()
 router.register(r"food-recipes", RecipeViewset, basename="foodrecipe")
 
 urlpatterns = [
-    path("recipes/basic", basicCreateUpdateView.as_view(), name="basic-recipes"),
+    path("recipes/basic", basicCreateView.as_view(), name="basic-recipes-create"),
+    path("recipes/basic/<int:id>/", basicUpdateView.as_view(), name="basic-recipes-update"),
     path(
         "recipes/convenience",
-        convenienceCreateUpdateView.as_view(),
-        name="convenience-recipes",
+        convenienceCreateView.as_view(),
+        name="convenience-recipes-create",
+    ),
+    path(
+        "recipes/convenience/<int:id>/",
+        convenienceUpdateView.as_view(),
+        name="convenience-recipes-update",
     ),
     path("recipes/images", ImageUploadView.as_view(), name="recipe-images"),
     path("recipes/", include(router.urls)),

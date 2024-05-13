@@ -9,7 +9,7 @@ from core.constants import SystemCodeManager
 
 
 class BasicRecipeUpdateTest(APITestCase):
-    create_recipe_url = reverse("recipes:basic-recipes")
+    create_recipe_url = reverse("recipes:basic-recipes-create")
     create_image_url = reverse("recipes:recipe-images")
 
     email = "test@test.com"
@@ -193,8 +193,8 @@ class BasicRecipeUpdateTest(APITestCase):
             ],
         }
 
-    def test_update_convenience_recipe_success(self):
-        update_url = f"{self.create_recipe_url}?id={self.recipe_id}"
+    def test_update_basic_recipe_success(self):
+        update_url = reverse('recipes:basic-recipes-update', kwargs={'id': self.recipe_id})
         response = self.client.put(
             path=update_url,
             HTTP_AUTHORIZATION=f"Bearer {self.access_token}",

@@ -1,9 +1,8 @@
-from django.urls import path, include
-from .viewsets import CommentViewSet
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+from .viewsets import CommentCreateAPIView, CommentUpdateDeleteAPIView
 
-router = DefaultRouter()
-router.register("", CommentViewSet, basename="comment")
+
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", CommentCreateAPIView.as_view(), name="comments-create"),
+    path("<int:id>/", CommentUpdateDeleteAPIView.as_view(), name="comments-updatedelete"),
 ]
