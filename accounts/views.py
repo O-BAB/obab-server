@@ -1,11 +1,11 @@
 from django.core.files.storage import default_storage
-from django.db import IntegrityError
 
 from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 
+from core.permissions import IsOwner
 from accounts.serializers import (
     UserSerializers,
     RegisterSerializer,
@@ -83,39 +83,37 @@ class TokenRefreshView(APIView):
 
 
 class UserInfoViews(APIView):
+    permission_classes = [IsOwner]
     parser_classes = (MultiPartParser,)
     serializer_class = UserSerializers
-
-    def get_object(self):
-        user = CustomJWTAuthentication().authenticate(self.request)
-        return user
 
     @swagger_auto_schema(tags=["유저 정보"])
     def get(self, request, *args, **kwargs):
         """
         유저 정보 조회
         """
-        instance = self.get_object()
-        serializer = self.serializer_class(instance)
+        user = CustomJWTAuthentication().authenticate(request)
+        serializer = self.serializer_class(user[0])
+
         return Response(data=serializer.data)
 
-    @swagger_auto_schema(tags=["유저 정보"])
+    @swagger_auto_schema(tags=["유저 정보"], request_body=serializer_class)
     def patch(self, request, *args, **kwargs):
         """
         유저 정보 부분 수정
         """
-        instance = self.get_object()
-        serializer = self.serializer_class(instance, data=request.data, partial=True)
+        user = CustomJWTAuthentication().authenticate(request)
+        serializer = self.serializer_class(user[0], data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             self.perform_update(serializer)
             return Response(data=serializer.data)
         raise_exception(code=SystemCodeManager.get_message("base_code", "BAD_REQUEST"))
 
     def perform_update(self, serializer):
-        instance = self.get_object()
+        user = CustomJWTAuthentication().authenticate(self.request)[0]
         if (
-            hasattr(instance, "profile_img")
-            and instance.profile_img.path != "img/default/default_img.jpg"
+            hasattr(user, "profile_img")
+            and user.profile_img.path != "img/default/default_img.jpg"
         ):
-            default_storage.delete(instance.profile_img.path)
+            default_storage.delete(user.profile_img.path)
         serializer.save()

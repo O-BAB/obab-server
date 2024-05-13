@@ -1,64 +1,92 @@
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
+from django.shortcuts import get_object_or_404
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
-
-from recipes.permissions import IsOwnerOrReadOnly
 from .serializers import CommentSerializer
 from core.tokens import CustomJWTAuthentication
+from core.permissions import IsOwnerOrReadOnly
+from comments.models import Comments
+from core.exceptions import raise_exception
 
 
-from .models import Comments
+class CommentCreateAPIView(APIView):
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [IsOwnerOrReadOnly]
 
-
-class CommentViewSet(
-    CreateModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet
-):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    queryset = Comments.objects.all()
-    serializer_class = CommentSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=CustomJWTAuthentication().authenticate(self.request))
-
-    @swagger_auto_schema(operation_id="댓글 생성", tags=["댓글"])
-    def create(self, request, *args, **kwargs):
+    def get_object(self, comment_id):
+        obj = Comments.objects.get(id=comment_id)
+        self.check_object_permissions(self.request, obj)
+        return obj
+    
+    @swagger_auto_schema(
+        operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer
+    )
+    def post(self, request):
         """
         댓글 생성
-        ---
-        root는 대댓글을 달 부모 댓글id 입력
-        일반 댓글의 경우 root에는 null값 전송
         """
-        return super().create(request, *args, **kwargs)
+        if request.data["root"] == 0:
+            request.data["root"] = None
+        serializer = CommentSerializer(data=request.data)
+        user = CustomJWTAuthentication().authenticate(request)[0]
+        if serializer.is_valid():
+            serializer.save(user=user)
+            return Response(data=serializer.data)
+        else:
+            raise_exception(code=(0, serializer.errors))
 
-    @swagger_auto_schema(operation_id="댓글 전체 수정", tags=["댓글"])
-    def update(self, request, *args, **kwargs):
-        """
-        댓글 전체 수정
-        ---
-        recipe는 본문의 id값
-        모든 파라미터를 입력해서 보내주셔야합니다.
-        """
-        return super().update(request, *args, **kwargs)
+class CommentUpdateDeleteAPIView(APIView):
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(operation_id="댓글 부분 수정", tags=["댓글"])
-    def partial_update(self, request, *args, **kwargs):
-        """
-        댓글 부분 수정
-        ---
-        recipe는 본문의 id값
-        수정할 내용만 파라미터로 보내주시면 됩니다.
-        """
-        return super().partial_update(request, *args, **kwargs)
+    def get_object(self, comment_id):
+        obj = Comments.objects.get(id=comment_id)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-    @swagger_auto_schema(operation_id="댓글 삭제", tags=["댓글"])
-    def destroy(self, request, *args, **kwargs):
+    @swagger_auto_schema(
+        operation_id="댓글 수정",
+        tags=["댓글"],
+        request_body=CommentSerializer,
+    )
+    def put(self, request, *args, **kwargs):
+        """
+        댓글 수정
+        """
+        comment_id = kwargs.get('id')
+        if request.data["root"] == 0:
+            request.data["root"] = None
+        if not comment_id:
+            return Response({"message": "ID가 필요합니다."})
+
+        try:
+            comment = self.get_object(comment_id)
+        except Comments.DoesNotExist:
+            return Response({"message": "댓글을 찾을 수 없습니다."})
+
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data)
+        else:
+            raise_exception(code=(0, serializer.errors))
+
+    @swagger_auto_schema(
+        operation_id="댓글 삭제",
+        tags=["댓글"],
+    )
+    def delete(self, request, *args, **kwargs):
         """
         댓글 삭제
-        ---
-        댓글 삭제
         """
-        return super().destroy(request, *args, **kwargs)
+        comment_id = kwargs.get('id')
+
+        try:
+            comment = self.get_object(comment_id)
+            comment.delete()
+            return Response(data={"message": "성공적으로 삭제"})
+        except Comments.DoesNotExist:
+            return Response(data={"message": "댓글을 찾을 수 없습니다."})

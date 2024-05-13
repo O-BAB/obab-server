@@ -239,6 +239,7 @@ class FoodRecipesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodRecipes
         fields = [
+            "id",
             "categoryCD",
             "user",
             "title",

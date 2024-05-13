@@ -9,7 +9,7 @@ from core.constants import SystemCodeManager
 
 
 class BasicRecipeCreateTest(APITestCase):
-    create_recipe_url = reverse("recipes:basic-recipes")
+    create_recipe_url = reverse("recipes:basic-recipes-create")
     create_image_url = reverse("recipes:recipe-images")
 
     email = "test@test.com"

@@ -10,16 +10,24 @@ class CustomJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            return None
+            raise_exception(
+                code=SystemCodeManager.get_message(
+                    "auth_code", "AUTHORIZATION_HEADER_NOT_FOUND"
+                )
+            )
         raw_token = self.get_raw_token(header)
         if raw_token is None:
             raise_exception(
                 code=SystemCodeManager.get_message("auth_code", "NOT_FOUND_TOKEN")
             )
-
-        validated_token = self.get_validated_token(raw_token)
-        user = self.get_user(validated_token)
-        return user, None
+        try:
+            validated_token = self.get_validated_token(raw_token)
+            user = self.get_user(validated_token)
+            return user, None
+        except:
+            raise_exception(
+                code=SystemCodeManager.get_message("auth_code", "TOKEN_INVALID")
+            )
 
     def get_user(self, validated_token):
         try:

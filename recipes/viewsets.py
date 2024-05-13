@@ -5,7 +5,6 @@ from drf_yasg import openapi
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser
 
 from core.tokens import CustomJWTAuthentication
@@ -14,7 +13,7 @@ from core.constants import SystemCodeManager
 from core.exceptions import raise_exception
 from core.responses import Response
 
-from recipes.permissions import IsOwnerOrReadOnly
+from core.permissions import IsOwnerOrReadOnly
 from recipes.models import FoodRecipes
 from recipes.serializers import (
     basicCreateUpdateSerializer,
@@ -25,9 +24,9 @@ from recipes.serializers import (
 )
 
 
-class basicCreateUpdateView(APIView):
+class basicCreateView(APIView):
     authentication_classes = [CustomJWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
 
     @swagger_auto_schema(
         operation_id="일반 레시피 생성",
@@ -55,21 +54,15 @@ class basicCreateUpdateView(APIView):
         else:
             raise_exception(code=(0, serializer.errors))
 
+class basicUpdateView(APIView):
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [IsOwnerOrReadOnly]
     @swagger_auto_schema(
         operation_id="일반 레시피 수정",
         tags=["레시피"],
-        manual_parameters=[
-            openapi.Parameter(
-                "id",
-                in_=openapi.IN_QUERY,
-                description="게시물 id.",
-                type=openapi.TYPE_STRING,
-                required=True,
-            ),
-        ],
         request_body=basicCreateUpdateSerializer,
     )
-    def put(self, request):
+    def put(self, request, *args, **kwargs):
         """
         일반 레시피 수정
         ---
@@ -78,9 +71,10 @@ class basicCreateUpdateView(APIView):
         seasoning_recipe, 양념 레시피
         cooking_tip, 요리 TIP
         """
-        recipe_id = request.GET.get("id")
+        recipe_id = kwargs.get("id")
         try:
             recipe = FoodRecipes.objects.get(pk=recipe_id)
+            self.check_object_permissions(self.request, recipe)
         except FoodRecipes.DoesNotExist:
             raise_exception(
                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
@@ -94,8 +88,8 @@ class basicCreateUpdateView(APIView):
             raise_exception(code=(0, serializer.errors))
 
 
-class convenienceCreateUpdateView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+class convenienceCreateView(APIView):
+    permission_classes = [IsOwnerOrReadOnly]
 
     @swagger_auto_schema(
         operation_id="편의점 레시피 생성",
@@ -117,29 +111,24 @@ class convenienceCreateUpdateView(APIView):
         else:
             raise_exception(code=(0, serializer.errors))
 
+class convenienceUpdateView(APIView):
+    permission_classes = [IsOwnerOrReadOnly]
+
     @swagger_auto_schema(
         operation_id="편의점 레시피 수정",
         tags=["레시피"],
-        manual_parameters=[
-            openapi.Parameter(
-                "id",
-                in_=openapi.IN_QUERY,
-                description="게시물 id.",
-                type=openapi.TYPE_STRING,
-                required=True,
-            ),
-        ],
         request_body=ConvenienceCreateUpdateSerializer,
     )
-    def put(self, request):
+    def put(self, request, *args, **kwargs):
         """
         편의점 레시피 수정
         ---
         convenience_store_combination, 편의점 꿀 조합
         """
-        recipe_id = request.GET.get("id")
+        recipe_id = kwargs.get("id")
         try:
             recipe = FoodRecipes.objects.get(pk=recipe_id)
+            self.check_object_permissions(self.request, recipe)
         except FoodRecipes.DoesNotExist:
             raise_exception(
                 code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
@@ -160,6 +149,7 @@ class RecipeViewset(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    permission_classes = [IsOwnerOrReadOnly]
     pagination_class = CustomPagination
     swagger_fake_view = False
 
@@ -243,6 +233,7 @@ class RecipeViewset(
         """
         recipe_id = kwargs.get("pk")
         recipe = FoodRecipes.objects.get(id=recipe_id)
+        self.check_object_permissions(self.request, recipe)
         recipe.delete()
 
         return Response(data="성공적으로 삭제")
