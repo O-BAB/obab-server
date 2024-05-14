@@ -11,7 +11,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         elif obj.user == CustomJWTAuthentication().authenticate(request)[0]:
             return True
         else:
-            print(2)
             raise_exception(code=SystemCodeManager.get_message("board_code","PermissionDenied"))
 
 

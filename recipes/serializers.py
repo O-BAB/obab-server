@@ -69,6 +69,8 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
             "like_count",
             "bookmark_count",
             "recipe_comments",
+            "created_at",
+            "updated_at",
         ]
 
     def get_like_count(self, obj):
@@ -91,6 +93,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
 
         recipe = FoodRecipes.objects.create(**validated_data)
         for ingredient_data in ingredients_data:
@@ -109,6 +112,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -161,6 +165,8 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
             "bookmark_count",
             "convenience_items",
             "recipe_comments",
+            "created_at",
+            "updated_at",
         ]
 
     def get_like_count(self, obj):
@@ -183,6 +189,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
 
         tot_price = sum(item["price"] for item in convenience_items)
 
@@ -203,6 +210,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -232,7 +240,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
 
 class FoodRecipesListSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+    thumnail_url = serializers.CharField(source="thumnail")
     like_count = serializers.SerializerMethodField()
     bookmark_count = serializers.SerializerMethodField()
 
@@ -247,6 +255,8 @@ class FoodRecipesListSerializer(serializers.ModelSerializer):
             "intro",
             "like_count",
             "bookmark_count",
+            "created_at",
+            "updated_at",
         ]
 
     def get_like_count(self, obj):
@@ -258,7 +268,7 @@ class FoodRecipesListSerializer(serializers.ModelSerializer):
 
 class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
-    thumnail_url = serializers.ImageField(source="thumnail", use_url=True)
+    thumnail_url = serializers.CharField(source="thumnail")
     like_count = serializers.SerializerMethodField()
     bookmark_count = serializers.SerializerMethodField()
     tot_price = serializers.ReadOnlyField()
@@ -275,6 +285,8 @@ class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
             "intro",
             "like_count",
             "bookmark_count",
+            "created_at",
+            "updated_at",
         ]
 
     def get_like_count(self, obj):
@@ -287,12 +299,14 @@ class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
 class SearchRecipeSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     like_count = serializers.SerializerMethodField()
+    thumnail_url = serializers.CharField(source="thumnail")
     bookmark_count = serializers.SerializerMethodField()
 
     class Meta:
         model = FoodRecipes
         fields = [
             "id",
+            "thumnail_url",
             "like_count",
             "bookmark_count",
             "created_at",
