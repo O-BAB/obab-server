@@ -9,7 +9,7 @@ from .serializers import CommentSerializer
 from core.tokens import CustomJWTAuthentication
 from core.permissions import IsOwnerOrReadOnly
 from comments.models import Comments
-from core.exceptions import raise_exception
+from core.exceptions.service_exceptions import *
 
 
 class CommentCreateAPIView(APIView):
@@ -20,7 +20,7 @@ class CommentCreateAPIView(APIView):
         obj = Comments.objects.get(id=comment_id)
         self.check_object_permissions(self.request, obj)
         return obj
-    
+
     @swagger_auto_schema(
         operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer
     )
@@ -36,7 +36,8 @@ class CommentCreateAPIView(APIView):
             serializer.save(user=user)
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
+
 
 class CommentUpdateDeleteAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
@@ -56,7 +57,7 @@ class CommentUpdateDeleteAPIView(APIView):
         """
         댓글 수정
         """
-        comment_id = kwargs.get('id')
+        comment_id = kwargs.get("id")
         if request.data["root"] == 0:
             request.data["root"] = None
         if not comment_id:
@@ -72,7 +73,7 @@ class CommentUpdateDeleteAPIView(APIView):
             serializer.save()
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
 
     @swagger_auto_schema(
         operation_id="댓글 삭제",
@@ -82,7 +83,7 @@ class CommentUpdateDeleteAPIView(APIView):
         """
         댓글 삭제
         """
-        comment_id = kwargs.get('id')
+        comment_id = kwargs.get("id")
 
         try:
             comment = self.get_object(comment_id)

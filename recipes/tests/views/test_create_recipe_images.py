@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 # Project
 from core.tokens import CustomJWTAuthentication
 from accounts.models import User
-from core.constants import SystemCodeManager
 
 
 class RecipeImageCreateTest(APITestCase):
@@ -33,5 +32,5 @@ class RecipeImageCreateTest(APITestCase):
             )
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )

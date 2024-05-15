@@ -9,8 +9,7 @@ from rest_framework.parsers import MultiPartParser
 
 from core.tokens import CustomJWTAuthentication
 from core.paginations import CustomPagination
-from core.constants import SystemCodeManager
-from core.exceptions import raise_exception
+from core.exceptions.service_exceptions import *
 from core.responses import Response
 
 from core.permissions import IsOwnerOrReadOnly
@@ -52,11 +51,13 @@ class basicCreateView(APIView):
             serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
+
 
 class basicUpdateView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
+
     @swagger_auto_schema(
         operation_id="일반 레시피 수정",
         tags=["레시피"],
@@ -76,16 +77,14 @@ class basicUpdateView(APIView):
             recipe = FoodRecipes.objects.get(pk=recipe_id)
             self.check_object_permissions(self.request, recipe)
         except FoodRecipes.DoesNotExist:
-            raise_exception(
-                code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-            )
+            raise RecipeNotFound
         serializer = basicCreateUpdateSerializer(recipe, data=request.data)
         user = CustomJWTAuthentication().authenticate(request)
         if serializer.is_valid():
             serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
 
 
 class convenienceCreateView(APIView):
@@ -109,7 +108,8 @@ class convenienceCreateView(APIView):
             serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
+
 
 class convenienceUpdateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
@@ -130,9 +130,7 @@ class convenienceUpdateView(APIView):
             recipe = FoodRecipes.objects.get(pk=recipe_id)
             self.check_object_permissions(self.request, recipe)
         except FoodRecipes.DoesNotExist:
-            raise_exception(
-                code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-            )
+            raise RecipeNotFound
         serializer = ConvenienceCreateUpdateSerializer(recipe, data=request.data)
         user = CustomJWTAuthentication().authenticate(request)
 
@@ -140,7 +138,7 @@ class convenienceUpdateView(APIView):
             serializer.save(user=user[0])
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
 
 
 class RecipeViewset(
@@ -213,9 +211,7 @@ class RecipeViewset(
         try:
             queryset = FoodRecipes.objects.get(id=recipe_id)
         except:
-            raise_exception(
-                code=SystemCodeManager.get_message("board_code", "BOARD_INVALID")
-            )
+            raise RecipeNotFound
         if queryset.categoryCD == "convenience_store_combination":
             serializer_class = ConvenienceCreateUpdateSerializer
         else:
@@ -260,4 +256,4 @@ class ImageUploadView(APIView):
             serializer.save(user=user, state="임시저장")
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest

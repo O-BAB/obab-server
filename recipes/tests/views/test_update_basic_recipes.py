@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 # Project
 from core.tokens import CustomJWTAuthentication
 from accounts.models import User
-from core.constants import SystemCodeManager
 
 
 class BasicRecipeUpdateTest(APITestCase):
@@ -32,7 +31,7 @@ class BasicRecipeUpdateTest(APITestCase):
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
         return response.data["data"]["image"]
 
@@ -126,7 +125,7 @@ class BasicRecipeUpdateTest(APITestCase):
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
         self.recipe_id = response.data["data"]["id"]
 
@@ -194,7 +193,9 @@ class BasicRecipeUpdateTest(APITestCase):
         }
 
     def test_update_basic_recipe_success(self):
-        update_url = reverse('recipes:basic-recipes-update', kwargs={'id': self.recipe_id})
+        update_url = reverse(
+            "recipes:basic-recipes-update", kwargs={"id": self.recipe_id}
+        )
         response = self.client.put(
             path=update_url,
             HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
@@ -204,7 +205,7 @@ class BasicRecipeUpdateTest(APITestCase):
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
 
         self.assertEqual(response.data["data"]["title"], self.update_data["title"])

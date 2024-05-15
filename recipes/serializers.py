@@ -93,7 +93,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
 
         recipe = FoodRecipes.objects.create(**validated_data)
         for ingredient_data in ingredients_data:
@@ -112,7 +112,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -189,8 +189,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
-
+        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
         tot_price = sum(item["price"] for item in convenience_items)
 
         recipe = FoodRecipes.objects.create(**validated_data, tot_price=tot_price)
@@ -210,7 +209,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
         process_datas = validated_data.pop("recipe_process")
         image_datas = validated_data.pop("recipe_image")
         thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/"+validated_data.get("thumnail")
+        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

@@ -3,8 +3,7 @@ from django.db import IntegrityError
 from rest_framework import serializers
 
 from core.tokens import CustomJWTAuthentication
-from core.constants import SystemCodeManager
-from core.exceptions import raise_exception
+from core.exceptions.service_exceptions import *
 from accounts.models import User
 
 
@@ -37,18 +36,14 @@ class RegisterSerializer(serializers.Serializer):
         Email 중복 검증
         """
         if User.objects.filter(email=data).exists():
-            raise_exception(
-                code=SystemCodeManager.get_message("auth_code", "EMAIL_ALREADY")
-            )
+            raise UserAlreadyExists
         return data
 
     def create(self, validated_data):
         try:
             user = User.objects.create_user(**validated_data)
         except IntegrityError:
-            raise_exception(
-                code=SystemCodeManager.get_message("auth_code", "USER_CREATE_ERROR")
-            )
+            raise UnknownException
 
         return CustomJWTAuthentication.create_token(user)
 
@@ -66,19 +61,13 @@ class LoginSerializer(serializers.Serializer):
         user = User.objects.filter(email=email).first()
 
         if not user:
-            raise_exception(
-                code=SystemCodeManager.get_message("auth_code", "USER_NOT_FOUND")
-            )
+            raise UserNotFound
 
         if not user.check_password(password):
-            raise_exception(
-                code=SystemCodeManager.get_message("auth_code", "USER_INVALID_PW")
-            )
+            raise UserPasswordInvalid
 
         if not user.is_active:
-            raise_exception(
-                code=SystemCodeManager.get_message("auth_code", "USER_NOT_ACTIVE")
-            )
+            raise UserIsNotAuthorized
 
         return CustomJWTAuthentication.create_token(user)
 

@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
 from core.tokens import CustomJWTAuthentication
-from core.exceptions import raise_exception
-from core.constants import SystemCodeManager
+from core.exceptions.service_exceptions import *
+
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -11,7 +11,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         elif obj.user == CustomJWTAuthentication().authenticate(request)[0]:
             return True
         else:
-            raise_exception(code=SystemCodeManager.get_message("board_code","PermissionDenied"))
+            raise InvalidRequest
 
 
 class IsOwner(permissions.BasePermission):

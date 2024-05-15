@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 # Project
 from core.tokens import CustomJWTAuthentication
 from accounts.models import User
-from core.constants import SystemCodeManager
 
 
 class BasicRecipeCreateTest(APITestCase):
@@ -32,7 +31,7 @@ class BasicRecipeCreateTest(APITestCase):
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
         return response.data["data"]["image"]
 
@@ -47,7 +46,7 @@ class BasicRecipeCreateTest(APITestCase):
             "thumnail_url": thumbnail_url,
             "video": "https://example.com/video/carbonara.mp4",
             "intro": "Classic Italian pasta dish with eggs, cheese, pancetta, and black pepper",
-            "time": "25 minutes",
+            "time": "08:11",
             "people_num": 4,
             "difficulty": "easy",
             "recipe_ingredients": [
@@ -110,15 +109,15 @@ class BasicRecipeCreateTest(APITestCase):
             ],
         }
 
-    def test_create_convenience_recipes_success(self):
+    def test_create_basic_recipes_success(self):
         response = self.client.post(
             path=self.create_recipe_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
             data=self.data,
             format="json",
         )
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
