@@ -9,7 +9,6 @@ from rest_framework.parsers import MultiPartParser
 
 from core.tokens import CustomJWTAuthentication
 from core.paginations import CustomPagination
-from core.constants import SystemCodeManager
 from core.exceptions.service_exceptions import *
 from core.responses import Response
 
@@ -53,10 +52,12 @@ class basicCreateView(APIView):
             return Response(data=serializer.data)
         else:
             raise InvalidRequest
-        
+
+
 class basicUpdateView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
+
     @swagger_auto_schema(
         operation_id="일반 레시피 수정",
         tags=["레시피"],
@@ -108,6 +109,7 @@ class convenienceCreateView(APIView):
             return Response(data=serializer.data)
         else:
             raise InvalidRequest
+
 
 class convenienceUpdateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]

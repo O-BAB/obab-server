@@ -1,7 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from core.constants import SystemCodeManager
 from core.exceptions.service_exceptions import *
 from accounts.models import User
 

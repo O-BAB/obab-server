@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 # Project
 from core.tokens import CustomJWTAuthentication
 from accounts.models import User
-from core.constants import SystemCodeManager
 
 
 class ConvenienceCreateTest(APITestCase):
@@ -35,7 +34,7 @@ class ConvenienceCreateTest(APITestCase):
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )
         return response.data["data"]["image"]
 
@@ -61,12 +60,12 @@ class ConvenienceCreateTest(APITestCase):
     def test_create_convenience_recipes_success(self):
         response = self.client.post(
             path=self.create_recipe_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
             data=self.data,
             format="json",
         )
 
         self.assertEqual(
             response.data["code"],
-            SystemCodeManager.get_message("base_code", "SUCCESS")[0],
+            0,
         )

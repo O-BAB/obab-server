@@ -28,6 +28,7 @@ class CustomAPIException(APIException):
                 "message": "UNKNOWN MESSAGE DESCRIPTION"
               }
     """
+
     status_code = status.HTTP_400_BAD_REQUEST
     _msg = []
     _map = dict(

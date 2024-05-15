@@ -2,7 +2,7 @@ from rest_framework import permissions
 
 from core.tokens import CustomJWTAuthentication
 from core.exceptions.service_exceptions import *
-from core.constants import SystemCodeManager
+
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):

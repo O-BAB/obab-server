@@ -3,7 +3,6 @@ from django.db import IntegrityError
 from rest_framework import serializers
 
 from core.tokens import CustomJWTAuthentication
-from core.constants import SystemCodeManager
 from core.exceptions.service_exceptions import *
 from accounts.models import User
 
@@ -66,7 +65,7 @@ class LoginSerializer(serializers.Serializer):
 
         if not user.check_password(password):
             raise UserPasswordInvalid
-        
+
         if not user.is_active:
             raise UserIsNotAuthorized
 

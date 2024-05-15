@@ -20,7 +20,11 @@ router.register(r"food-recipes", RecipeViewset, basename="foodrecipe")
 
 urlpatterns = [
     path("recipes/basic", basicCreateView.as_view(), name="basic-recipes-create"),
-    path("recipes/basic/<int:id>/", basicUpdateView.as_view(), name="basic-recipes-update"),
+    path(
+        "recipes/basic/<int:id>/",
+        basicUpdateView.as_view(),
+        name="basic-recipes-update",
+    ),
     path(
         "recipes/convenience",
         convenienceCreateView.as_view(),

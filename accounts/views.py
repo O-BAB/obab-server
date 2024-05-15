@@ -12,7 +12,6 @@ from accounts.serializers import (
     LoginSerializer,
     TokenRefreshSerializer,
 )
-from core.constants import SystemCodeManager
 from core.responses import Response
 from core.exceptions.service_exceptions import *
 from core.tokens import CustomJWTAuthentication
