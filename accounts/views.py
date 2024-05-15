@@ -14,7 +14,7 @@ from accounts.serializers import (
 )
 from core.constants import SystemCodeManager
 from core.responses import Response
-from core.exceptions import raise_exception
+from core.exceptions.service_exceptions import *
 from core.tokens import CustomJWTAuthentication
 from core.responses import Response
 
@@ -31,9 +31,7 @@ class RegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            raise_exception(
-                code=SystemCodeManager.get_message("base_code", "INVALID_FORMAT")
-            )
+            raise InvalidRequest
 
         serializer.save()
 
@@ -52,9 +50,7 @@ class LoginView(APIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            raise_exception(
-                code=SystemCodeManager.get_message("base_code", "INVALID_FORMAT")
-            )
+            raise InvalidRequest
 
         return Response(data=serializer.data)
 
@@ -73,11 +69,8 @@ class TokenRefreshView(APIView):
         """
         serializer = self.serializer_class(data=request.data)
 
-        # Validation Check
         if not serializer.is_valid():
-            raise_exception(
-                code=SystemCodeManager.get_message("base_code", "INVALID_FORMAT")
-            )
+            raise InvalidRequest
 
         return Response(data=serializer.data)
 
@@ -107,7 +100,7 @@ class UserInfoViews(APIView):
         if serializer.is_valid(raise_exception=True):
             self.perform_update(serializer)
             return Response(data=serializer.data)
-        raise_exception(code=SystemCodeManager.get_message("base_code", "BAD_REQUEST"))
+        raise InvalidRequest
 
     def perform_update(self, serializer):
         user = CustomJWTAuthentication().authenticate(self.request)[0]

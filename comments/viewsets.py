@@ -9,7 +9,7 @@ from .serializers import CommentSerializer
 from core.tokens import CustomJWTAuthentication
 from core.permissions import IsOwnerOrReadOnly
 from comments.models import Comments
-from core.exceptions import raise_exception
+from core.exceptions.service_exceptions import *
 
 
 class CommentCreateAPIView(APIView):
@@ -36,7 +36,7 @@ class CommentCreateAPIView(APIView):
             serializer.save(user=user)
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
 
 class CommentUpdateDeleteAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
@@ -72,7 +72,7 @@ class CommentUpdateDeleteAPIView(APIView):
             serializer.save()
             return Response(data=serializer.data)
         else:
-            raise_exception(code=(0, serializer.errors))
+            raise InvalidRequest
 
     @swagger_auto_schema(
         operation_id="댓글 삭제",
