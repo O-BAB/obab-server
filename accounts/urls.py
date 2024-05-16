@@ -12,7 +12,7 @@ from accounts.social_login import (
     NaverLoginToDjango,
 )
 from .views import UserInfoViews, RegisterView, LoginView, TokenRefreshView
-from .viewsets import RecipeBookmarkList, RecipeWriteList
+from .viewsets import RecipeBookmarkList, RecipeWriteList, RecipeCommentList
 
 social_url = [
     path("kakao/login/", KakaoLoginView.as_view(), name="kakao_login"),
@@ -45,5 +45,6 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("userinfo/bookmark", RecipeBookmarkList.as_view(), name="user-bookmark-list"),
     path("userinfo/write", RecipeWriteList.as_view(), name="user-write-list"),
+    path("userinfo/comment", RecipeCommentList.as_view(), name="user-comments-list"),
     *social_url,
 ]
