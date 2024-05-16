@@ -30,7 +30,7 @@ class LikeToggleAPIView(APIView):
     def post(self, request):
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
-        user = CustomJWTAuthentication().authenticate(self.request)
+        user = CustomJWTAuthentication().authenticate(self.request)[0]
 
         if user in recipe.like.all():
             recipe.like.remove(user)
@@ -59,7 +59,7 @@ class BookmarkToggleAPIView(APIView):
     def post(self, request):
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
-        user = CustomJWTAuthentication().authenticate(self.request)
+        user = CustomJWTAuthentication().authenticate(self.request)[0]
 
         if user in recipe.bookmark.all():
             recipe.bookmark.remove(user)
