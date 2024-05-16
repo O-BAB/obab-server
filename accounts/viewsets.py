@@ -16,6 +16,7 @@ class RecipeBookmarkList(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
     serializer_class = FoodRecipesListSerializer
+    pagination_class = CustomPagination()
 
     def get_queryset(self):
         user = CustomJWTAuthentication().authenticate(self.request)
@@ -27,8 +28,14 @@ class RecipeBookmarkList(APIView):
         북마크 목록
         """
         self.queryset = self.get_queryset()
-        serializer = self.serializer_class(self.queryset, many=True)
-        return Response(data=serializer.data)
+        page = self.pagination_class.paginate_queryset(
+            self.queryset, request, view=self
+        )
+        if page is not None:
+            serializer = self.serializer_class(page, many=True)
+            return self.pagination_class.get_paginated_response(serializer.data)
+        else:
+            return Response(data=serializer.data)
 
 
 class RecipeWriteList(APIView):
