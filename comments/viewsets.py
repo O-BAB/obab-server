@@ -1,9 +1,6 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from .serializers import CommentSerializer
 from core.tokens import CustomJWTAuthentication
@@ -15,11 +12,6 @@ from core.exceptions.service_exceptions import *
 class CommentCreateAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
-
-    def get_object(self, comment_id):
-        obj = Comments.objects.get(id=comment_id)
-        self.check_object_permissions(self.request, obj)
-        return obj
 
     @swagger_auto_schema(
         operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer
@@ -61,12 +53,11 @@ class CommentUpdateDeleteAPIView(APIView):
         if request.data["root"] == 0:
             request.data["root"] = None
         if not comment_id:
-            return Response({"message": "ID가 필요합니다."})
-
+            raise CommentNotFound
         try:
             comment = self.get_object(comment_id)
         except Comments.DoesNotExist:
-            return Response({"message": "댓글을 찾을 수 없습니다."})
+            raise CommentNotFound
 
         serializer = CommentSerializer(comment, data=request.data)
         if serializer.is_valid():
