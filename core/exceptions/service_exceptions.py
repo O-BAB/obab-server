@@ -69,3 +69,8 @@ class UserIsNotAuthorized(CustomAPIException):
 class RecipeNotFound(CustomAPIException):
     status_code = status.HTTP_404_NOT_FOUND
     _msg = ["Recipes-NOT-FOUND", "레시피를 찾을 수 없습니다."]
+
+
+class CommentNotFound(CustomAPIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    _msg = ["Comments-NOT-FOUND", "댓글을 찾을 수 없습니다. ID값을 확인해주세요."]

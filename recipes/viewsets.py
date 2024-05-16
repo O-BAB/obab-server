@@ -44,9 +44,6 @@ class basicCreateView(APIView):
         serializer = basicCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)
 
-        if not serializer.is_valid():
-            print(serializer.errors)
-
         if serializer.is_valid():
             serializer.save(user=user[0])
             return Response(data=serializer.data)
