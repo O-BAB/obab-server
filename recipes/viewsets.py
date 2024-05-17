@@ -1,25 +1,21 @@
-from django.core.files.storage import default_storage
-
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
-from rest_framework import viewsets, mixins
-from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import mixins, viewsets
 from rest_framework.parsers import MultiPartParser
+from rest_framework.views import APIView
 
-from core.tokens import CustomJWTAuthentication
-from core.paginations import CustomPagination
 from core.exceptions.service_exceptions import *
-from core.responses import Response
-
+from core.paginations import CustomPagination
 from core.permissions import IsOwnerOrReadOnly
+from core.responses import Response
+from core.tokens import CustomJWTAuthentication
 from recipes.models import FoodRecipes
 from recipes.serializers import (
-    basicCreateUpdateSerializer,
     ConvenienceCreateUpdateSerializer,
     ConvenienceRecipesListSerializer,
     FoodRecipesListSerializer,
     ImageUploadSerializer,
+    basicCreateUpdateSerializer,
 )
 
 
@@ -27,11 +23,7 @@ class basicCreateView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(
-        operation_id="일반 레시피 생성",
-        tags=["레시피"],
-        request_body=basicCreateUpdateSerializer,
-    )
+    @swagger_auto_schema(operation_id="일반 레시피 생성", tags=["레시피"], request_body=basicCreateUpdateSerializer)
     def post(self, request):
         """
         일반 레시피 생성
@@ -55,11 +47,7 @@ class basicUpdateView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(
-        operation_id="일반 레시피 수정",
-        tags=["레시피"],
-        request_body=basicCreateUpdateSerializer,
-    )
+    @swagger_auto_schema(operation_id="일반 레시피 수정", tags=["레시피"], request_body=basicCreateUpdateSerializer)
     def put(self, request, *args, **kwargs):
         """
         일반 레시피 수정
@@ -87,11 +75,7 @@ class basicUpdateView(APIView):
 class convenienceCreateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(
-        operation_id="편의점 레시피 생성",
-        tags=["레시피"],
-        request_body=ConvenienceCreateUpdateSerializer,
-    )
+    @swagger_auto_schema(operation_id="편의점 레시피 생성", tags=["레시피"], request_body=ConvenienceCreateUpdateSerializer)
     def post(self, request):
         """
         편의점 레시피 생성
@@ -111,11 +95,7 @@ class convenienceCreateView(APIView):
 class convenienceUpdateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(
-        operation_id="편의점 레시피 수정",
-        tags=["레시피"],
-        request_body=ConvenienceCreateUpdateSerializer,
-    )
+    @swagger_auto_schema(operation_id="편의점 레시피 수정", tags=["레시피"], request_body=ConvenienceCreateUpdateSerializer)
     def put(self, request, *args, **kwargs):
         """
         편의점 레시피 수정
@@ -139,10 +119,7 @@ class convenienceUpdateView(APIView):
 
 
 class RecipeViewset(
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
 ):
     permission_classes = [IsOwnerOrReadOnly]
     pagination_class = CustomPagination
@@ -177,7 +154,7 @@ class RecipeViewset(
                     "cooking_tip",
                 ],
                 required=True,
-            ),
+            )
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -196,10 +173,7 @@ class RecipeViewset(
         serializer = serializer_class(queryset, many=True)
         return Response(data=serializer.data)
 
-    @swagger_auto_schema(
-        operation_id="레시피 상세 보기",
-        tags=["레시피"],
-    )
+    @swagger_auto_schema(operation_id="레시피 상세 보기", tags=["레시피"])
     def retrieve(self, request, *args, **kwargs):
         """
         레시피를 상세 조회
@@ -207,7 +181,7 @@ class RecipeViewset(
         recipe_id = kwargs.get("pk")
         try:
             queryset = FoodRecipes.objects.get(id=recipe_id)
-        except:
+        except FoodRecipes.DoesNotExist:
             raise RecipeNotFound
         if queryset.categoryCD == "convenience_store_combination":
             serializer_class = ConvenienceCreateUpdateSerializer
@@ -216,10 +190,7 @@ class RecipeViewset(
         serializer = serializer_class(queryset)
         return Response(data=serializer.data)
 
-    @swagger_auto_schema(
-        operation_id="레시피 삭제",
-        tags=["레시피"],
-    )
+    @swagger_auto_schema(operation_id="레시피 삭제", tags=["레시피"])
     def destroy(self, request, *args, **kwargs):
         """
         레시피 삭제
@@ -237,10 +208,7 @@ class ImageUploadView(APIView):
     parser_classes = (MultiPartParser,)
     permission_classes = []
 
-    @swagger_auto_schema(
-        tags=["레시피 이미지 업로드"],
-        request_body=ImageUploadSerializer,
-    )
+    @swagger_auto_schema(tags=["레시피 이미지 업로드"], request_body=ImageUploadSerializer)
     def post(self, request):
         """
         레시피 이미지 생성

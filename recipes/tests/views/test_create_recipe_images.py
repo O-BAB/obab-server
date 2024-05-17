@@ -2,9 +2,10 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from accounts.models import User
+
 # Project
 from core.tokens import CustomJWTAuthentication
-from accounts.models import User
 
 
 class RecipeImageCreateTest(APITestCase):
@@ -30,7 +31,4 @@ class RecipeImageCreateTest(APITestCase):
                 data={"image": img_file},
                 format="multipart",
             )
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)

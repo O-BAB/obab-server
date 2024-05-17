@@ -1,21 +1,20 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import CommentSerializer
-from core.tokens import CustomJWTAuthentication
-from core.permissions import IsOwnerOrReadOnly
 from comments.models import Comments
 from core.exceptions.service_exceptions import *
+from core.permissions import IsOwnerOrReadOnly
+from core.tokens import CustomJWTAuthentication
+
+from .serializers import CommentSerializer
 
 
 class CommentCreateAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [IsOwnerOrReadOnly]
 
-    @swagger_auto_schema(
-        operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer
-    )
+    @swagger_auto_schema(operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer)
     def post(self, request):
         """
         댓글 생성
@@ -40,11 +39,7 @@ class CommentUpdateDeleteAPIView(APIView):
         self.check_object_permissions(self.request, obj)
         return obj
 
-    @swagger_auto_schema(
-        operation_id="댓글 수정",
-        tags=["댓글"],
-        request_body=CommentSerializer,
-    )
+    @swagger_auto_schema(operation_id="댓글 수정", tags=["댓글"], request_body=CommentSerializer)
     def put(self, request, *args, **kwargs):
         """
         댓글 수정
@@ -66,10 +61,7 @@ class CommentUpdateDeleteAPIView(APIView):
         else:
             raise InvalidRequest
 
-    @swagger_auto_schema(
-        operation_id="댓글 삭제",
-        tags=["댓글"],
-    )
+    @swagger_auto_schema(operation_id="댓글 삭제", tags=["댓글"])
     def delete(self, request, *args, **kwargs):
         """
         댓글 삭제

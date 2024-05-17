@@ -1,10 +1,9 @@
 import json
 from copy import deepcopy
-
-from rest_framework.exceptions import APIException
-from rest_framework import status
-
 from enum import Enum
+
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
 class Contexts(Enum):
@@ -31,10 +30,7 @@ class CustomAPIException(APIException):
 
     status_code = status.HTTP_400_BAD_REQUEST
     _msg = []
-    _map = dict(
-        code="UNKNOWN ERROR CODE",
-        message="UNKNOWN MESSAGE DESCRIPTION",
-    )
+    _map = dict(code="UNKNOWN ERROR CODE", message="UNKNOWN MESSAGE DESCRIPTION")
 
     def __init__(self, **kwargs):
         _detail_msg = deepcopy(self._msg) if self._msg else list()

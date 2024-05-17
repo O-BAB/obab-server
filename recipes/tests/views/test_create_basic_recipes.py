@@ -2,9 +2,10 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from accounts.models import User
+
 # Project
 from core.tokens import CustomJWTAuthentication
-from accounts.models import User
 
 
 class BasicRecipeCreateTest(APITestCase):
@@ -29,10 +30,7 @@ class BasicRecipeCreateTest(APITestCase):
                 format="multipart",
             )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)
         return response.data["data"]["image"]
 
     def setUp(self):
@@ -57,67 +55,28 @@ class BasicRecipeCreateTest(APITestCase):
                     "unit": "grams",
                     "etc": "preferably thick spaghetti",
                 },
-                {
-                    "type": "meat",
-                    "name": "pancetta",
-                    "count": 150,
-                    "unit": "grams",
-                    "etc": "diced",
-                },
-                {
-                    "type": "dairy",
-                    "name": "Parmesan cheese",
-                    "count": 100,
-                    "unit": "grams",
-                    "etc": "grated",
-                },
-                {
-                    "type": "dairy",
-                    "name": "eggs",
-                    "count": 4,
-                    "unit": "units",
-                    "etc": "large eggs",
-                },
-                {
-                    "type": "spice",
-                    "name": "black pepper",
-                    "count": 1,
-                    "unit": "teaspoon",
-                    "etc": "freshly ground",
-                },
+                {"type": "meat", "name": "pancetta", "count": 150, "unit": "grams", "etc": "diced"},
+                {"type": "dairy", "name": "Parmesan cheese", "count": 100, "unit": "grams", "etc": "grated"},
+                {"type": "dairy", "name": "eggs", "count": 4, "unit": "units", "etc": "large eggs"},
+                {"type": "spice", "name": "black pepper", "count": 1, "unit": "teaspoon", "etc": "freshly ground"},
             ],
             "recipe_image": [{"image_url": image1_url}, {"image_url": image2_url}],
             "recipe_process": [
+                {"content": "Boil the spaghetti in salted water according to package instructions until al dente."},
+                {"content": "While the pasta cooks, sauté the pancetta in a skillet over medium heat until crisp."},
+                {"content": "In a bowl, whisk together eggs and grated Parmesan until well combined."},
+                {"content": "Drain the pasta and add it to the skillet with the pancetta. Remove from heat."},
                 {
-                    "content": "Boil the spaghetti in salted water according to package instructions until al dente."
+                    "content": "Quickly pour in the egg and cheese mixture, stirring vigorously to coat the spaghetti"
+                    "and to prevent the eggs from scrambling."
                 },
-                {
-                    "content": "While the pasta cooks, sauté the pancetta in a skillet over medium heat until crisp."
-                },
-                {
-                    "content": "In a bowl, whisk together eggs and grated Parmesan until well combined."
-                },
-                {
-                    "content": "Drain the pasta and add it to the skillet with the pancetta. Remove from heat."
-                },
-                {
-                    "content": "Quickly pour in the egg and cheese mixture, stirring vigorously to coat the spaghetti and to prevent the eggs from scrambling."
-                },
-                {
-                    "content": "Serve immediately with additional Parmesan and a generous sprinkle of black pepper."
-                },
+                {"content": "Serve immediately with additional Parmesan and a generous sprinkle of black pepper."},
             ],
         }
 
     def test_create_basic_recipes_success(self):
         response = self.client.post(
-            path=self.create_recipe_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
-            data=self.data,
-            format="json",
+            path=self.create_recipe_url, HTTP_AUTHORIZATION=f"Bearer {self.access_token}", data=self.data, format="json"
         )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)

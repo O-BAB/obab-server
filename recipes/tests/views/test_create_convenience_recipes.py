@@ -2,9 +2,10 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from accounts.models import User
+
 # Project
 from core.tokens import CustomJWTAuthentication
-from accounts.models import User
 
 
 class ConvenienceCreateTest(APITestCase):
@@ -32,10 +33,7 @@ class ConvenienceCreateTest(APITestCase):
                 format="multipart",
             )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)
         return response.data["data"]["image"]
 
     def setUp(self):
@@ -59,13 +57,7 @@ class ConvenienceCreateTest(APITestCase):
 
     def test_create_convenience_recipes_success(self):
         response = self.client.post(
-            path=self.create_recipe_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
-            data=self.data,
-            format="json",
+            path=self.create_recipe_url, HTTP_AUTHORIZATION=f"Bearer {self.access_token}", data=self.data, format="json"
         )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)

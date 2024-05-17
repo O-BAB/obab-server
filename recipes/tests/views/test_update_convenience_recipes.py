@@ -2,9 +2,10 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from accounts.models import User
+
 # Project
 from core.tokens import CustomJWTAuthentication
-from accounts.models import User
 
 
 class ConvenienceUpdateTest(APITestCase):
@@ -29,25 +30,16 @@ class ConvenienceUpdateTest(APITestCase):
                 format="multipart",
             )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)
         return response.data["data"]["image"]
 
     def setUp(self):
         image1_url = self.upload_image("recipes/tests/data/test_image1.png")
         image2_url = self.upload_image("recipes/tests/data/test_image2.png")
         thumbnail_url = self.upload_image("recipes/tests/data/test_thumnail.png")
-        test_update_image1 = self.upload_image(
-            "recipes/tests/data/test_update_image1.png"
-        )
-        test_update_image2 = self.upload_image(
-            "recipes/tests/data/test_update_image2.png"
-        )
-        test_update_image3 = self.upload_image(
-            "recipes/tests/data/test_update_image.png"
-        )
+        test_update_image1 = self.upload_image("recipes/tests/data/test_update_image1.png")
+        test_update_image2 = self.upload_image("recipes/tests/data/test_update_image2.png")
+        test_update_image3 = self.upload_image("recipes/tests/data/test_update_image.png")
 
         self.data = {
             "categoryCD": "convenience_store_combination",
@@ -64,16 +56,10 @@ class ConvenienceUpdateTest(APITestCase):
         }
 
         response = self.client.post(
-            path=self.create_recipe_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
-            data=self.data,
-            format="json",
+            path=self.create_recipe_url, HTTP_AUTHORIZATION=f"Bearer {self.access_token}", data=self.data, format="json"
         )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)
         self.recipe_id = response.data["data"]["id"]
 
         self.update_data = {
@@ -85,40 +71,22 @@ class ConvenienceUpdateTest(APITestCase):
             "time": "09:10:11",
             "people_num": 5,
             "difficulty": "easy",
-            "recipe_image": [
-                {"image_url": test_update_image2},
-                {"image_url": test_update_image1},
-            ],
+            "recipe_image": [{"image_url": test_update_image2}, {"image_url": test_update_image1}],
             "recipe_process": [{"content": "convenience_update test"}],
-            "convenience_items": [
-                {"name": "불닭", "price": 3000},
-                {"name": "치즈", "price": 2000},
-            ],
+            "convenience_items": [{"name": "불닭", "price": 3000}, {"name": "치즈", "price": 2000}],
         }
 
     def test_update_convenience_recipe_success(self):
-        update_url = reverse(
-            "recipes:convenience-recipes-update", kwargs={"id": self.recipe_id}
-        )
+        update_url = reverse("recipes:convenience-recipes-update", kwargs={"id": self.recipe_id})
         response = self.client.put(
-            path=update_url,
-            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
-            data=self.update_data,
-            format="json",
+            path=update_url, HTTP_AUTHORIZATION=f"Bearer {self.access_token}", data=self.update_data, format="json"
         )
 
-        self.assertEqual(
-            response.data["code"],
-            0,
-        )
+        self.assertEqual(response.data["code"], 0)
 
         self.assertEqual(response.data["data"]["title"], self.update_data["title"])
         self.assertEqual(response.data["data"]["video"], self.update_data["video"])
         self.assertEqual(response.data["data"]["intro"], self.update_data["intro"])
         self.assertEqual(response.data["data"]["time"], self.update_data["time"])
-        self.assertEqual(
-            response.data["data"]["people_num"], self.update_data["people_num"]
-        )
-        self.assertEqual(
-            response.data["data"]["difficulty"], self.update_data["difficulty"]
-        )
+        self.assertEqual(response.data["data"]["people_num"], self.update_data["people_num"])
+        self.assertEqual(response.data["data"]["difficulty"], self.update_data["difficulty"])

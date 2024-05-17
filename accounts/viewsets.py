@@ -1,15 +1,14 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 
-from core.permissions import IsOwnerOrReadOnly
-from core.tokens import CustomJWTAuthentication
-from core.paginations import CustomPagination
-from core.responses import Response
-
-from recipes.serializers import FoodRecipesListSerializer
-from recipes.models import FoodRecipes
 from comments.models import Comments
 from comments.serializers import CommentSerializer
+from core.paginations import CustomPagination
+from core.permissions import IsOwnerOrReadOnly
+from core.responses import Response
+from core.tokens import CustomJWTAuthentication
+from recipes.models import FoodRecipes
+from recipes.serializers import FoodRecipesListSerializer
 
 
 class RecipeBookmarkList(APIView):
@@ -28,9 +27,7 @@ class RecipeBookmarkList(APIView):
         북마크 목록
         """
         self.queryset = self.get_queryset()
-        page = self.pagination_class.paginate_queryset(
-            self.queryset, request, view=self
-        )
+        page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)
         if page is not None:
             serializer = self.serializer_class(page, many=True)
             return self.pagination_class.get_paginated_response(serializer.data)
@@ -54,9 +51,7 @@ class RecipeWriteList(APIView):
         작성글 목록
         """
         self.queryset = self.get_queryset()
-        page = self.pagination_class.paginate_queryset(
-            self.queryset, request, view=self
-        )
+        page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)
         if page is not None:
             serializer = self.serializer_class(page, many=True)
             return self.pagination_class.get_paginated_response(serializer.data)
@@ -80,9 +75,7 @@ class RecipeCommentList(APIView):
         작성한 댓글 목록
         """
         self.queryset = self.get_queryset()
-        page = self.pagination_class.paginate_queryset(
-            self.queryset, request, view=self
-        )
+        page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)
         if page is not None:
             serializer = self.serializer_class(page, many=True)
             for item in serializer.data:

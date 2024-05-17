@@ -38,9 +38,7 @@ class MenuList(models.Model):
     temperature = models.ForeignKey(Temperature, on_delete=models.SET_NULL, null=True)
     spicy = models.ForeignKey(Spicy, on_delete=models.SET_NULL, null=True)
     meat_type = models.ForeignKey(MeatType, on_delete=models.SET_NULL, null=True)
-    cooking_method = models.ForeignKey(
-        CookingMethod, on_delete=models.SET_NULL, null=True
-    )
+    cooking_method = models.ForeignKey(CookingMethod, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name

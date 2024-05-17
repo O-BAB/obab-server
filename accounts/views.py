@@ -1,31 +1,19 @@
 from django.core.files.storage import default_storage
-
 from drf_yasg.utils import swagger_auto_schema
-
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 
-from core.permissions import IsOwner
-from accounts.serializers import (
-    UserSerializers,
-    RegisterSerializer,
-    LoginSerializer,
-    TokenRefreshSerializer,
-)
-from core.responses import Response
+from accounts.serializers import LoginSerializer, RegisterSerializer, TokenRefreshSerializer, UserSerializers
 from core.exceptions.service_exceptions import *
-from core.tokens import CustomJWTAuthentication
+from core.permissions import IsOwner
 from core.responses import Response
+from core.tokens import CustomJWTAuthentication
 
 
 class RegisterView(APIView):
     serializer_class = RegisterSerializer
 
-    @swagger_auto_schema(
-        operation_id="회원가입",
-        tags=["사용자 인증"],
-        request_body=serializer_class,
-    )
+    @swagger_auto_schema(operation_id="회원가입", tags=["사용자 인증"], request_body=serializer_class)
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
@@ -40,11 +28,7 @@ class RegisterView(APIView):
 class LoginView(APIView):
     serializer_class = LoginSerializer
 
-    @swagger_auto_schema(
-        operation_id="로그인",
-        tags=["사용자 인증"],
-        request_body=LoginSerializer,
-    )
+    @swagger_auto_schema(operation_id="로그인", tags=["사용자 인증"], request_body=LoginSerializer)
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
@@ -57,11 +41,7 @@ class LoginView(APIView):
 class TokenRefreshView(APIView):
     serializer_class = TokenRefreshSerializer
 
-    @swagger_auto_schema(
-        operation_id="토큰 재발급",
-        tags=["사용자 인증"],
-        request_body=TokenRefreshSerializer,
-    )
+    @swagger_auto_schema(operation_id="토큰 재발급", tags=["사용자 인증"], request_body=TokenRefreshSerializer)
     def post(self, request):
         """
         토큰 재발급을 처리합니다.
@@ -103,9 +83,6 @@ class UserInfoViews(APIView):
 
     def perform_update(self, serializer):
         user = CustomJWTAuthentication().authenticate(self.request)[0]
-        if (
-            hasattr(user, "profile_img")
-            and user.profile_img.path != "img/default/default_img.jpg"
-        ):
+        if hasattr(user, "profile_img") and user.profile_img.path != "img/default/default_img.jpg":
             default_storage.delete(user.profile_img.path)
         serializer.save()

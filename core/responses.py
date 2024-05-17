@@ -7,12 +7,7 @@ class CustomResponse(Response):
         code = kwargs.pop("code", (0, "SUCCESS"))
         msg = kwargs.get("msg", code[1])
 
-        payload = {
-            "status_code": status,
-            "msg": msg,
-            "code": code[0],
-            "data": data,
-        }
+        payload = {"status_code": status, "msg": msg, "code": code[0], "data": data}
         super().__init__(payload, **kwargs)
 
 

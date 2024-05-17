@@ -1,10 +1,9 @@
 from django.db import IntegrityError
-
 from rest_framework import serializers
 
-from core.tokens import CustomJWTAuthentication
-from core.exceptions.service_exceptions import *
 from accounts.models import User
+from core.exceptions.service_exceptions import *
+from core.tokens import CustomJWTAuthentication
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -12,16 +11,7 @@ class UserSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            "id",
-            "created_at",
-            "updated_at",
-            "email",
-            "name",
-            "nickname",
-            "profile_img",
-            "self_info",
-        ]
+        fields = ["id", "created_at", "updated_at", "email", "name", "nickname", "profile_img", "self_info"]
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -77,9 +67,7 @@ class TokenRefreshSerializer(serializers.Serializer):
     토큰 재발급 시리얼 라이저
     """
 
-    token = serializers.CharField(
-        max_length=255, required=True, write_only=True, label="[Input]refresh_token"
-    )
+    token = serializers.CharField(max_length=255, required=True, write_only=True, label="[Input]refresh_token")
 
     access_token = serializers.CharField(read_only=True, label="[Output]access_token")
     refresh_token = serializers.CharField(read_only=True, label="[Output]refresh_token")

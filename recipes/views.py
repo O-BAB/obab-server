@@ -1,16 +1,14 @@
 from django.db.models import Count
-
+from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from core.tokens import CustomJWTAuthentication
 from recipes.models import FoodRecipes, Ingredients
 from recipes.serializers import SearchRecipeSerializer
-from core.tokens import CustomJWTAuthentication
 
 
 class LikeToggleAPIView(APIView):
@@ -19,12 +17,8 @@ class LikeToggleAPIView(APIView):
         tags=["좋아요&북마크"],
         manual_parameters=[
             openapi.Parameter(
-                "id",
-                in_=openapi.IN_QUERY,
-                description="게시물 id",
-                type=openapi.TYPE_INTEGER,
-                required=True,
-            ),
+                "id", in_=openapi.IN_QUERY, description="게시물 id", type=openapi.TYPE_INTEGER, required=True
+            )
         ],
     )
     def post(self, request):
@@ -48,12 +42,8 @@ class BookmarkToggleAPIView(APIView):
         tags=["좋아요&북마크"],
         manual_parameters=[
             openapi.Parameter(
-                "id",
-                in_=openapi.IN_QUERY,
-                description="게시물 id",
-                type=openapi.TYPE_INTEGER,
-                required=True,
-            ),
+                "id", in_=openapi.IN_QUERY, description="게시물 id", type=openapi.TYPE_INTEGER, required=True
+            )
         ],
     )
     def post(self, request):
@@ -78,11 +68,7 @@ class SearchRecipe(APIView):
         tags=["검색"],
         manual_parameters=[
             openapi.Parameter(
-                "title",
-                in_=openapi.IN_QUERY,
-                description="검색어를 입력하세요.",
-                type=openapi.TYPE_STRING,
-                required=False,
+                "title", in_=openapi.IN_QUERY, description="검색어를 입력하세요.", type=openapi.TYPE_STRING, required=False
             ),
             openapi.Parameter(
                 "categoryCD",
@@ -99,11 +85,7 @@ class SearchRecipe(APIView):
                 required=False,
             ),
             openapi.Parameter(
-                "ingredients",
-                in_=openapi.IN_QUERY,
-                description="재료를 입력하세요.",
-                type=openapi.TYPE_STRING,
-                required=False,
+                "ingredients", in_=openapi.IN_QUERY, description="재료를 입력하세요.", type=openapi.TYPE_STRING, required=False
             ),
             openapi.Parameter(
                 "sort_by",

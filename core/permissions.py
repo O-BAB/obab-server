@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
-from core.tokens import CustomJWTAuthentication
 from core.exceptions.service_exceptions import *
+from core.tokens import CustomJWTAuthentication
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):

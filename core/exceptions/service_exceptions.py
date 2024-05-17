@@ -15,10 +15,7 @@ class UniqueValidationError(CustomAPIException):
 
 class InvalidRequest(CustomAPIException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    _msg = [
-        "INVALID-REQUEST",
-        "인가되지 않은 접근입니다. 유저 토큰 혹은 요청 파라미터를 확인해주세요.",
-    ]
+    _msg = ["INVALID-REQUEST", "인가되지 않은 접근입니다. 유저 토큰 혹은 요청 파라미터를 확인해주세요."]
 
 
 class InvalidPagination(CustomAPIException):

@@ -14,15 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="CookingMethod",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -30,15 +22,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Fullness",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -46,15 +30,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="MeatType",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -62,15 +38,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Spicy",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -78,15 +46,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Temperature",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -94,15 +54,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Type",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("eng_name", models.CharField(max_length=50)),
                 ("kor_name", models.CharField(max_length=50)),
             ],
@@ -110,64 +62,26 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="MenuList",
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=50)),
                 (
                     "cooking_method",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.cookingmethod",
-                    ),
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.cookingmethod"),
                 ),
                 (
                     "fullness",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.fullness",
-                    ),
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.fullness"),
                 ),
                 (
                     "meat_type",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.meattype",
-                    ),
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.meattype"),
                 ),
-                (
-                    "spicy",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.spicy",
-                    ),
-                ),
+                ("spicy", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.spicy")),
                 (
                     "temperature",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.temperature",
-                    ),
+                    models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.temperature"),
                 ),
-                (
-                    "type",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="menu.type",
-                    ),
-                ),
+                ("type", models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="menu.type")),
             ],
         ),
     ]

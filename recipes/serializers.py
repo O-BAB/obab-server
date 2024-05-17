@@ -1,10 +1,7 @@
-from django.core.files.storage import default_storage
-
 from rest_framework import serializers
 
-from recipes.models import FoodRecipes, Ingredients, ConvenienceItems, RecipeImage
-from recipes.models import RecipeProcess
 from comments.serializers import CommentSerializer
+from recipes.models import ConvenienceItems, FoodRecipes, Ingredients, RecipeImage, RecipeProcess
 
 
 class RecipeProcessSerializer(serializers.ModelSerializer):
@@ -121,9 +118,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
 
         ConvenienceItems.objects.filter(foodrecipe_id=instance.id).delete()
         RecipeProcess.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(
-            foodrecipe_id=None, state="반영"
-        )
+        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(foodrecipe_id=None, state="반영")
         for ingredient_data in ingredients_data:
             Ingredients.objects.create(foodrecipe=instance, **ingredient_data)
         for process_data in process_datas:
@@ -221,9 +216,7 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
 
         ConvenienceItems.objects.filter(foodrecipe_id=instance.id).delete()
         RecipeProcess.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(
-            foodrecipe_id=None, state="반영"
-        )
+        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(foodrecipe_id=None, state="반영")
 
         for convenience_item in convenience_items:
             ConvenienceItems.objects.create(foodrecipe=instance, **convenience_item)

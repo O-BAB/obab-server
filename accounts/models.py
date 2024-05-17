@@ -1,13 +1,9 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import (
-    BaseUserManager,
-    AbstractBaseUser,
-    PermissionsMixin,
-)
 
-from core.models import TimeStampedModel
 from core.functions import upload_user_directory
+from core.models import TimeStampedModel
 
 
 class UserManager(BaseUserManager):
@@ -43,13 +39,9 @@ class UserManager(BaseUserManager):
 class User(TimeStampedModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), unique=True, max_length=255)
     name = models.CharField(_("name"), max_length=30, blank=True, null=True)
-    nickname = models.CharField(
-        _("nickname"), max_length=15, unique=True, blank=True, null=True
-    )
+    nickname = models.CharField(_("nickname"), max_length=15, unique=True, blank=True, null=True)
     profile_img = models.ImageField(
-        _("profile image"),
-        upload_to=upload_user_directory,
-        default="img/default/default_img.jpg",
+        _("profile image"), upload_to=upload_user_directory, default="img/default/default_img.jpg"
     )
     self_info = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(_("active"), default=True)
@@ -65,8 +57,6 @@ class User(TimeStampedModel, AbstractBaseUser, PermissionsMixin):
         if not self.email:
             raise ValueError("email is required.")
 
-        self.profile_img.upload_to = (
-            f"profile_img/{self.email}/{self.created_at}/{self.nickname}_img.webp"
-        )
+        self.profile_img.upload_to = f"profile_img/{self.email}/{self.created_at}/{self.nickname}_img.webp"
 
         super().save(*args, **kwargs)
