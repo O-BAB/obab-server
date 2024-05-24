@@ -22,6 +22,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 # env
+OPENAI_API_KEY = env("openai_api_key")
 KAKAO_REST_API_KEY = env("kakao_rest_api_key")
 SOCIAL_AUTH_GOOGLE_CLIENT_ID = env("google_client_api")
 SOCIAL_AUTH_GOOGLE_SECRET = env("google_api_secret")

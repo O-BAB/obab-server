@@ -10,6 +10,7 @@ urlpatterns = [
     path("", include("recipes.urls")),
     path("accounts/", include("accounts.urls")),
     path("comments/", include("comments.urls")),
+    path("openai/", include("menu.urls")),
 ]
 
 urlpatterns += get_swagger_urls()
