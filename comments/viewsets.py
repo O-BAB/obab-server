@@ -17,7 +17,10 @@ class CommentCreateAPIView(APIView):
     @swagger_auto_schema(operation_id="댓글 생성", tags=["댓글"], request_body=CommentSerializer)
     def post(self, request):
         """
-        댓글 생성
+        - 댓글 생성
+
+        **Description**
+        - 대댓글일 경우 root에 상위 댓글의 ID를 입력해주세요.
         """
         if request.data["root"] == 0:
             request.data["root"] = None
@@ -42,7 +45,10 @@ class CommentUpdateDeleteAPIView(APIView):
     @swagger_auto_schema(operation_id="댓글 수정", tags=["댓글"], request_body=CommentSerializer)
     def put(self, request, *args, **kwargs):
         """
-        댓글 수정
+        - 댓글 수정
+
+        **Description**
+
         """
         comment_id = kwargs.get("id")
         if request.data["root"] == 0:
@@ -64,7 +70,10 @@ class CommentUpdateDeleteAPIView(APIView):
     @swagger_auto_schema(operation_id="댓글 삭제", tags=["댓글"])
     def delete(self, request, *args, **kwargs):
         """
-        댓글 삭제
+        - 댓글 삭제
+
+        **Description**
+        - 댓글의 ID를 입력해주세요.
         """
         comment_id = kwargs.get("id")
 

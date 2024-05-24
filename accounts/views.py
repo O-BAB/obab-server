@@ -11,6 +11,13 @@ from core.tokens import CustomJWTAuthentication
 
 
 class RegisterView(APIView):
+    """
+    - 회원가입
+
+    **Description**
+    - 회원가입 시 사용하는 API입니다.
+    """
+
     serializer_class = RegisterSerializer
 
     @swagger_auto_schema(operation_id="회원가입", tags=["사용자 인증"], request_body=serializer_class)
@@ -30,6 +37,14 @@ class LoginView(APIView):
 
     @swagger_auto_schema(operation_id="로그인", tags=["사용자 인증"], request_body=LoginSerializer)
     def post(self, request):
+        """
+        - 로그인
+
+        **Description**
+        - 로그인 시 사용하는 API입니다.
+        - 로그인 시 USERNAME_FIELD, PASSWORD를 입력받아 인증합니다.
+        - 인증 완료 후 access-token과 refresh-token을 발행해줍니다.
+        """
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
@@ -44,7 +59,7 @@ class TokenRefreshView(APIView):
     @swagger_auto_schema(operation_id="토큰 재발급", tags=["사용자 인증"], request_body=TokenRefreshSerializer)
     def post(self, request):
         """
-        토큰 재발급을 처리합니다.
+        - 토큰 재발급을 처리합니다.
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -62,7 +77,9 @@ class UserInfoViews(APIView):
     @swagger_auto_schema(tags=["유저 정보"])
     def get(self, request, *args, **kwargs):
         """
-        유저 정보 조회
+        - 유저 정보 조회
+
+        **Description**
         """
         user = CustomJWTAuthentication().authenticate(request)
         serializer = self.serializer_class(user[0])
@@ -72,7 +89,10 @@ class UserInfoViews(APIView):
     @swagger_auto_schema(tags=["유저 정보"], request_body=serializer_class)
     def patch(self, request, *args, **kwargs):
         """
-        유저 정보 부분 수정
+        - 유저 정보 업데이트
+
+        **Description**
+        - Access Token을 이용하여 유저 정보를 업데이트 합니다
         """
         user = CustomJWTAuthentication().authenticate(request)
         serializer = self.serializer_class(user[0], data=request.data, partial=True)

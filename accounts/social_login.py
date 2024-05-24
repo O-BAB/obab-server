@@ -38,10 +38,6 @@ class GoogleCallbackView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        operation_id="구글 로그인 콜백",
-        operation_description="구글에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴\n"
-        "닉네임이 없으면 message를 True 반환\n"
-        "True면 닉네임, 프로필, 이름, 한줄 소개 업데이트",
         tags=["소셜 로그인"],
         manual_parameters=[
             openapi.Parameter(
@@ -50,6 +46,12 @@ class GoogleCallbackView(APIView):
         ],
     )
     def get(self, request):
+        """
+        - 구글 로그인
+
+        **Description**
+        - 구글에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴
+        """
         BASE_URL = Constants.BASE_URL
         GOOGLE_CLIENT_ID = Constants.GOOGLE_CLIENT_ID
         GOOGLE_CLIENT_SECRET = Constants.GOOGLE_CLIENT_SECRET
@@ -135,10 +137,6 @@ class NaverCallbackView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        operation_id="네이버 로그인 콜백",
-        operation_description="네이버에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴\n"
-        "닉네임이 없으면 message를 True 반환\n"
-        "True면 닉네임, 프로필, 이름, 한줄 소개 업데이트",
         tags=["소셜 로그인"],
         manual_parameters=[
             openapi.Parameter(
@@ -147,6 +145,12 @@ class NaverCallbackView(APIView):
         ],
     )
     def get(self, request):
+        """
+        - 네이버 로그인
+
+        **Description**
+        - 네이버에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴
+        """
         BASE_URL = Constants.BASE_URL
         NAVER_CLIENT_ID = Constants.NAVER_CLIENT_ID
         NAVER_CLIENT_SECRET = Constants.NAVER_CLIENT_SECRET
@@ -230,10 +234,6 @@ class KakaoCallbackView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        operation_id="카카오 로그인 콜백",
-        operation_description="카카오에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴\n"
-        "닉네임이 없으면 message를 True 반환\n"
-        "True면 닉네임, 프로필, 이름, 한줄 소개 업데이트",
         tags=["소셜 로그인"],
         manual_parameters=[
             openapi.Parameter(
@@ -242,6 +242,12 @@ class KakaoCallbackView(APIView):
         ],
     )
     def get(self, request):
+        """
+        - 카카오 로그인
+
+        **Description**
+        - 카카오에서 반환한 인증 코드를 넣으면, 회원가입 or 로그인 후 서버 토큰 리턴
+        """
         BASE_URL = Constants.BASE_URL
         REST_API_KEY = Constants.REST_API_KEY
         KAKAO_CALLBACK_URI = Constants.KAKAO_CALLBACK_URI
