@@ -24,7 +24,10 @@ class RecipeBookmarkList(APIView):
     @swagger_auto_schema(tags=["유저 정보"])
     def get(self, request):
         """
-        북마크 목록
+        - 북마크 목록
+
+        **Description**
+        - Mypage에 유저가 저장한 게시물 목록을 보는 API입니다.
         """
         self.queryset = self.get_queryset()
         page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)
@@ -48,7 +51,10 @@ class RecipeWriteList(APIView):
     @swagger_auto_schema(tags=["유저 정보"])
     def get(self, request, *args, **kwargs):
         """
-        작성글 목록
+        - 작성글 목록
+
+        **Description**
+        - Mypage에 유저가 작성한 게시물 목록을 보는 API입니다.
         """
         self.queryset = self.get_queryset()
         page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)
@@ -72,7 +78,10 @@ class RecipeCommentList(APIView):
     @swagger_auto_schema(tags=["유저 정보"])
     def get(self, request, *args, **kwargs):
         """
-        작성한 댓글 목록
+        - 작성 댓글 목록
+
+        **Description**
+        - Mypage에 유저가 작성한 댓글 목록을 보는 API입니다.
         """
         self.queryset = self.get_queryset()
         page = self.pagination_class.paginate_queryset(self.queryset, request, view=self)

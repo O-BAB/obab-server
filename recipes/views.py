@@ -14,7 +14,7 @@ from recipes.serializers import SearchRecipeSerializer
 class LikeToggleAPIView(APIView):
     @swagger_auto_schema(
         operation_id="게시물 좋아요",
-        tags=["좋아요&북마크"],
+        tags=["좋아요&북마크&검색"],
         manual_parameters=[
             openapi.Parameter(
                 "id", in_=openapi.IN_QUERY, description="게시물 id", type=openapi.TYPE_INTEGER, required=True
@@ -22,6 +22,13 @@ class LikeToggleAPIView(APIView):
         ],
     )
     def post(self, request):
+        """
+        - 좋아요
+
+        **Description**
+        - 좋아요 토글 기능입니다.
+        - 게시물 ID를 입력하면 됩니다.
+        """
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
         user = CustomJWTAuthentication().authenticate(self.request)[0]
@@ -39,7 +46,7 @@ class LikeToggleAPIView(APIView):
 class BookmarkToggleAPIView(APIView):
     @swagger_auto_schema(
         operation_id="게시물 북마크",
-        tags=["좋아요&북마크"],
+        tags=["좋아요&북마크&검색"],
         manual_parameters=[
             openapi.Parameter(
                 "id", in_=openapi.IN_QUERY, description="게시물 id", type=openapi.TYPE_INTEGER, required=True
@@ -47,6 +54,13 @@ class BookmarkToggleAPIView(APIView):
         ],
     )
     def post(self, request):
+        """
+        - 저장
+
+        **Description**
+        - 저장 토글 기능입니다.
+        - 게시물 ID를 입력하면 됩니다.
+        """
         recipe_id = request.GET.get("id")
         recipe = get_object_or_404(FoodRecipes, id=recipe_id)
         user = CustomJWTAuthentication().authenticate(self.request)[0]
@@ -63,9 +77,8 @@ class BookmarkToggleAPIView(APIView):
 
 class SearchRecipe(APIView):
     @swagger_auto_schema(
-        operation_id="검색 기능",
-        operation_description="레시피를 검색하고 필터링합니다.",
-        tags=["검색"],
+        operation_id="검색",
+        tags=["좋아요&북마크&검색"],
         manual_parameters=[
             openapi.Parameter(
                 "title", in_=openapi.IN_QUERY, description="검색어를 입력하세요.", type=openapi.TYPE_STRING, required=False
@@ -98,6 +111,13 @@ class SearchRecipe(APIView):
         ],
     )
     def get(self, request):
+        """
+        - 검색
+
+        **Description**
+        - 좋아요 토글 기능입니다.
+        - 게시물 ID를 입력하면 됩니다.
+        """
         title = request.query_params.get("title", "")
         category = request.query_params.get("categoryCD", "")
         ingredients = request.query_params.get("ingredients", "")

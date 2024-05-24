@@ -26,12 +26,14 @@ class basicCreateView(APIView):
     @swagger_auto_schema(operation_id="일반 레시피 생성", tags=["레시피"], request_body=basicCreateUpdateSerializer)
     def post(self, request):
         """
-        일반 레시피 생성
-        ---
-        food_recipe, 음식 레시피
-        broadcast_recipe, 방송 레시피
-        seasoning_recipe, 양념 레시피
-        cooking_tip, 요리 TIP
+        - 일반 레시피 생성
+
+        **Description**
+        카테고리 목록
+        - food_recipe, 음식 레시피
+        - broadcast_recipe, 방송 레시피
+        - seasoning_recipe, 양념 레시피
+        - cooking_tip, 요리 TIP
         """
         serializer = basicCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)
@@ -50,12 +52,14 @@ class basicUpdateView(APIView):
     @swagger_auto_schema(operation_id="일반 레시피 수정", tags=["레시피"], request_body=basicCreateUpdateSerializer)
     def put(self, request, *args, **kwargs):
         """
-        일반 레시피 수정
-        ---
-        food_recipe, 음식 레시피
-        broadcast_recipe, 방송 레시피
-        seasoning_recipe, 양념 레시피
-        cooking_tip, 요리 TIP
+        - 일반 레시피 수정
+
+        **Description**
+        카테고리 목록
+        - food_recipe, 음식 레시피
+        - broadcast_recipe, 방송 레시피
+        - seasoning_recipe, 양념 레시피
+        - cooking_tip, 요리 TIP
         """
         recipe_id = kwargs.get("id")
         try:
@@ -78,9 +82,10 @@ class convenienceCreateView(APIView):
     @swagger_auto_schema(operation_id="편의점 레시피 생성", tags=["레시피"], request_body=ConvenienceCreateUpdateSerializer)
     def post(self, request):
         """
-        편의점 레시피 생성
-        ---
-        convenience_store_combination, 편의점 꿀 조합
+        - 편의점 레시피 생성
+
+        **Description**
+        - 카테고리는 "convenience_store_combination" 로 해주세요.
         """
         serializer = ConvenienceCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(request)
@@ -98,9 +103,10 @@ class convenienceUpdateView(APIView):
     @swagger_auto_schema(operation_id="편의점 레시피 수정", tags=["레시피"], request_body=ConvenienceCreateUpdateSerializer)
     def put(self, request, *args, **kwargs):
         """
-        편의점 레시피 수정
-        ---
-        convenience_store_combination, 편의점 꿀 조합
+        - 편의점 레시피 수정
+
+        **Description**
+        - 카테고리는 "convenience_store_combination" 로 해주세요.
         """
         recipe_id = kwargs.get("id")
         try:
@@ -159,7 +165,12 @@ class RecipeViewset(
     )
     def list(self, request, *args, **kwargs):
         """
-        카테고리별 목록 보기
+        - 카테고리별 목록 보기
+
+        **Description**
+        - 카테고리를 선택하면 관련된 게시물 목록을 보여줍니다.
+        - page_size는 몇개씩 보여줄 것인지 입니다.
+        - page는 몇번째 페이지를 로드할지 입니다.
         """
         category_cd = request.GET.get("categoryCD")
         queryset = self.get_queryset(category_cd)
@@ -176,7 +187,10 @@ class RecipeViewset(
     @swagger_auto_schema(operation_id="레시피 상세 보기", tags=["레시피"])
     def retrieve(self, request, *args, **kwargs):
         """
-        레시피를 상세 조회
+        - 레시피 상세 조회
+
+        **Description**
+        - 게시물 ID를 입력하면 게시물을 상세 조회합니다.
         """
         recipe_id = kwargs.get("pk")
         try:
@@ -193,7 +207,10 @@ class RecipeViewset(
     @swagger_auto_schema(operation_id="레시피 삭제", tags=["레시피"])
     def destroy(self, request, *args, **kwargs):
         """
-        레시피 삭제
+        - 레시피 삭제
+
+        **Description**
+        - 게시물 ID를 입력하면 게시물을 삭제합니다.
         """
         recipe_id = kwargs.get("pk")
         recipe = FoodRecipes.objects.get(id=recipe_id)
@@ -211,8 +228,10 @@ class ImageUploadView(APIView):
     @swagger_auto_schema(tags=["레시피 이미지 업로드"], request_body=ImageUploadSerializer)
     def post(self, request):
         """
-        레시피 이미지 생성
-        ---
+        - 이미지 업로드
+
+        **Description**
+        - 이미지 파일을 업로드 해주면 저장된 경로를 리턴해줍니다.
         """
         serializer = ImageUploadSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)[0]
