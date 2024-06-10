@@ -34,6 +34,7 @@ class basicCreateView(APIView):
         - broadcast_recipe, 방송 레시피
         - seasoning_recipe, 양념 레시피
         - cooking_tip, 요리 TIP
+        - recipeIngredients, Ex) 양념장, 고추장 1 숟가락 -> type: 양념장, name: 고추장, count: 1, unit: 숟가락, ect: 비고
         """
         serializer = basicCreateUpdateSerializer(data=request.data)
         user = CustomJWTAuthentication().authenticate(self.request)

@@ -44,6 +44,7 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
     bookmark_count = serializers.SerializerMethodField()
     recipe_ingredients = IngredientsSerializer(many=True)
     recipe_sub_items = serializers.SerializerMethodField()
+    recipe_comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = FoodRecipes
@@ -63,18 +64,16 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
             "bookmark_count",
             "created_at",
             "updated_at",
+            "recipe_comments",
             "recipe_sub_items",
         ]
 
     def get_recipe_sub_items(self, obj):
         recipe_process = RecipeProcessSerializer(obj.recipe_process.all(), many=True).data
         recipe_image = RecipeImageSerializer(obj.recipe_image.all(), many=True).data
-        recipe_comments = CommentSerializer(obj.recipe_comments.all(), many=True).data
 
         sub_items = []
-        sub_items.append(
-            {"recipeComments": recipe_comments, "recipeImage": recipe_image, "recipeProcess": recipe_process}
-        )
+        sub_items.append({"recipeImage": recipe_image, "recipeProcess": recipe_process})
         return sub_items
 
     def get_like_count(self, obj):
@@ -144,8 +143,6 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
     like_count = serializers.SerializerMethodField()
     bookmark_count = serializers.SerializerMethodField()
     convenience_items = ConvenienceItemsSerializer(many=True)
-    recipe_process = RecipeProcessSerializer(many=True)
-    recipe_image = RecipeImageSerializer(many=True)
     recipe_comments = CommentSerializer(many=True, read_only=True)
     recipe_sub_items = serializers.SerializerMethodField()
 
@@ -162,26 +159,21 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
             "time",
             "people_num",
             "difficulty",
-            "recipe_image",
-            "recipe_process",
+            "convenience_items",
             "like_count",
             "bookmark_count",
-            "convenience_items",
-            "recipe_comments",
-            "recipe_sub_items",
             "created_at",
             "updated_at",
+            "recipe_comments",
+            "recipe_sub_items",
         ]
 
     def get_recipe_sub_items(self, obj):
         recipe_process = RecipeProcessSerializer(obj.recipe_process.all(), many=True).data
         recipe_image = RecipeImageSerializer(obj.recipe_image.all(), many=True).data
-        recipe_comments = CommentSerializer(obj.recipe_comments.all(), many=True).data
 
         sub_items = []
-        sub_items.append(
-            {"recipeComments": recipe_comments, "recipeImage": recipe_image, "recipeProcess": recipe_process}
-        )
+        sub_items.append({"recipeImage": recipe_image, "recipeProcess": recipe_process})
         return sub_items
 
     def get_like_count(self, obj):
