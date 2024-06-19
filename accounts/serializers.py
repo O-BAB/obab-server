@@ -11,7 +11,7 @@ class UserSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "created_at", "updated_at", "email", "name", "nickname", "profile_img", "self_info"]
+        fields = ["id", "email", "name", "nickname", "profile_img", "self_info", "created_at", "updated_at"]
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -44,6 +44,7 @@ class LoginSerializer(serializers.Serializer):
 
     access_token = serializers.CharField(read_only=True)
     refresh_token = serializers.CharField(read_only=True)
+    user_info = UserSerializers(read_only=True)
 
     def validate(self, data):
         email = data.get("email")
@@ -58,8 +59,14 @@ class LoginSerializer(serializers.Serializer):
 
         if not user.is_active:
             raise UserIsNotAuthorized
+        tokens = CustomJWTAuthentication.create_token(user)
+        user_info = UserSerializers(user).data
 
-        return CustomJWTAuthentication.create_token(user)
+        res = {"access_token": tokens["access_token"], "refresh_token": tokens["refresh_token"], "user_info": user_info}
+
+        print(res)
+
+        return res
 
 
 class TokenRefreshSerializer(serializers.Serializer):
