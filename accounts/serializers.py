@@ -1,87 +1,61 @@
-from django.db import IntegrityError
 from rest_framework import serializers
 
 from accounts.models import User
-from core.exceptions.service_exceptions import *
-from core.tokens import CustomJWTAuthentication
+from core.exceptions.service_exceptions import UserAlreadyExists
+from core.serializers import CustomTokenBlacklistSerializer, CustomTokenObtainPairSerializer
 
 
-class UserSerializers(serializers.ModelSerializer):
-    email = serializers.ReadOnlyField()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "name",
+            "nickname",
+            "profile_img",
+            "self_info",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+        )
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "name", "nickname", "password"]
+
+    def is_valid(self, *, raise_exception=False):
+        if User.objects.filter(email=self.initial_data.get("email")).exists():
+            raise UserAlreadyExists
+        super().is_valid(raise_exception=raise_exception)
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.save()
+        return validated_data
+
+
+class UserPatchSerializer(serializers.ModelSerializer):
+    __options = {"required": False, "allow_null": True, "allow_blank": True}
+    __image_options = {"required": False, "allow_null": True, "allow_empty_file": True}
+    name = serializers.CharField(help_text="유저 이름", **__options)
+    nickname = serializers.CharField(help_text="닉네임", **__options)
+    profile_img = serializers.ImageField(help_text="프로필 이미지", **__image_options)
+    self_info = serializers.CharField(help_text="한줄 소개", **__options)
 
     class Meta:
         model = User
-        fields = ["id", "email", "name", "nickname", "profile_img", "self_info", "created_at", "updated_at"]
+        fields = ("name", "nickname", "profile_img", "self_info")
 
 
-class RegisterSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=255, required=True, write_only=True)
-    password = serializers.CharField(max_length=128, required=True, write_only=True)
-
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
-
-    def validate_email(self, data):
-        """
-        Email 중복 검증
-        """
-        if User.objects.filter(email=data).exists():
-            raise UserAlreadyExists
-        return data
-
-    def create(self, validated_data):
-        try:
-            user = User.objects.create_user(**validated_data)
-        except IntegrityError:
-            raise UnknownException
-
-        return CustomJWTAuthentication.create_token(user)
+class UserLoginSerializer(CustomTokenObtainPairSerializer):
+    username_field = User.USERNAME_FIELD
 
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=255, required=True, write_only=True)
-    password = serializers.CharField(max_length=128, required=True, write_only=True)
-
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
-    user_info = UserSerializers(read_only=True)
-
-    def validate(self, data):
-        email = data.get("email")
-        password = data.get("password")
-        user = User.objects.filter(email=email).first()
-
-        if not user:
-            raise UserNotFound
-
-        if not user.check_password(password):
-            raise UserPasswordInvalid
-
-        if not user.is_active:
-            raise UserIsNotAuthorized
-        tokens = CustomJWTAuthentication.create_token(user)
-        user_info = UserSerializers(user).data
-
-        res = {"access_token": tokens["access_token"], "refresh_token": tokens["refresh_token"], "user_info": user_info}
-
-        print(res)
-
-        return res
-
-
-class TokenRefreshSerializer(serializers.Serializer):
+class UserLogoutSerializer(CustomTokenBlacklistSerializer):
     """
-    토큰 재발급 시리얼 라이저
+    :comment: `access-token` used for get `refresh-token` from `refresh_jti`
+               TokenBlacklistSerializer required `refresh-token` to move into blacklist-table.
     """
-
-    token = serializers.CharField(max_length=255, required=True, write_only=True, label="[Input]refresh_token")
-
-    access_token = serializers.CharField(read_only=True, label="[Output]access_token")
-    refresh_token = serializers.CharField(read_only=True, label="[Output]refresh_token")
-
-    def validate(self, data):
-        refresh_token = data.get("token")
-
-        user = CustomJWTAuthentication().token_va(token=refresh_token)
-
-        return CustomJWTAuthentication.create_token(user)

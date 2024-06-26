@@ -117,7 +117,7 @@ MEDIA_URL = "/media/"
 
 # djangorestframework
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("core.middlewares.CustomJWTAuthentication",),
     "DEFAULT_RENDERER_CLASSES": (
         "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
         "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",
@@ -130,6 +130,9 @@ REST_FRAMEWORK = {
 }
 
 # djangorestframework-simplejwt
+
+AUTHENTICATION_BACKENDS = ("core.backends.CustomJWTBackend",)
+
 REST_USE_JWT = True
 
 SIMPLE_JWT = {
