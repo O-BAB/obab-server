@@ -1,4 +1,5 @@
-from django.urls import path
+from rest_framework.routers import SimpleRouter
+from rest_framework.urls import path
 
 from accounts.social_login import (
     GoogleCallbackView,
@@ -12,8 +13,10 @@ from accounts.social_login import (
     NaverLoginView,
 )
 
-from .views import LoginView, RegisterView, TokenRefreshView, UserInfoViews
-from .viewsets import RecipeBookmarkList, RecipeCommentList, RecipeWriteList
+from .viewsets import RecipeBookmarkList, RecipeCommentList, RecipeWriteList, UserViewSet
+
+router = SimpleRouter(trailing_slash=False)
+
 
 social_url = [
     path("kakao/login/", KakaoLoginView.as_view(), name="kakao_login"),
@@ -27,13 +30,17 @@ social_url = [
     path("naver/login/finish/", NaverLoginToDjango.as_view(), name="naver_login_to_django"),
 ]
 
+login_url = [
+    path("register/", UserViewSet.as_view({"post": "create"})),
+    path("userinfo/<int:pk>", UserViewSet.as_view({"get": "retrieve", "delete": "destroy", "patch": "partial_update"})),
+    path("login/", UserViewSet.as_view({"post": "login"})),
+    path("users/logout", UserViewSet.as_view({"get": "logout"})),
+]
+
 urlpatterns = [
-    path("register/", RegisterView.as_view(), name="register"),
-    path("login/", LoginView.as_view(), name="login"),
-    path("userinfo/", UserInfoViews.as_view(), name="userinfo"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("userinfo/bookmark", RecipeBookmarkList.as_view(), name="user-bookmark-list"),
-    path("userinfo/write", RecipeWriteList.as_view(), name="user-write-list"),
-    path("userinfo/comment", RecipeCommentList.as_view(), name="user-comments-list"),
+    path("userinfo/bookmark", RecipeBookmarkList.as_view({"get": "list"}), name="user-bookmark-list"),
+    path("userinfo/write", RecipeWriteList.as_view({"get": "list"}), name="user-write-list"),
+    path("userinfo/comment", RecipeCommentList.as_view({"get": "list"}), name="user-comments-list"),
     *social_url,
+    *login_url,
 ]
