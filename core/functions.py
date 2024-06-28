@@ -44,6 +44,26 @@ def upload_image_directory(instance, filename):
     return path
 
 
+def upload_process_image_directory(instance, filename):
+    email = instance.foodrecipe.user.email
+    now = timezone.now()
+
+    base_name = email.split("@")[0]
+    file_extension = os.path.splitext(filename)[1]
+    unique_id = uuid.uuid4()
+
+    # 경로를 안전하게 연결
+    path = os.path.join(
+        "img",
+        str(now.year),
+        str(now.month),
+        str(now.day),
+        f"user_{instance.foodrecipe.user.id}",
+        f'{now.strftime("%Y%m%d")}_{base_name}_{unique_id}{file_extension}',
+    )
+    return path
+
+
 def upload_thumnail_directory(instance, filename):
     category = instance.categoryCD
     email = instance.user.email
