@@ -1,49 +1,71 @@
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers
 
 from comments.serializers import CommentSerializer
-from recipes.models import ConvenienceItems, FoodRecipes, Ingredients, RecipeImage, RecipeProcess
+from recipes.models import ConvenienceItems, FoodRecipes, Ingredients, RecipeProcess
+
+
+class LikeBookmark:
+    def get_like_count(self, obj):
+        return obj.like.count()
+
+    def get_bookmark_count(self, obj):
+        return obj.bookmark.count()
 
 
 class RecipeProcessSerializer(serializers.ModelSerializer):
-    process_id = serializers.CharField(source="id", read_only=True)
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = RecipeProcess
-        fields = ["process_id", "content"]
-
-
-class RecipeImageSerializer(serializers.ModelSerializer):
-    image_id = serializers.CharField(source="id", read_only=True)
-    image_url = serializers.CharField(source="image.url")
-
-    class Meta:
-        model = RecipeImage
-        fields = ["image_id", "image_url"]
+        fields = ["id", "order", "content", "image"]
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
-    ingredients_id = serializers.CharField(source="id", read_only=True)
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = Ingredients
-        fields = ["ingredients_id", "type", "name", "count", "unit", "etc"]
+        fields = ["id", "type", "name", "count", "unit", "etc"]
 
 
 class ConvenienceItemsSerializer(serializers.ModelSerializer):
-    convenienceItems_id = serializers.CharField(source="id", read_only=True)
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = ConvenienceItems
-        fields = ["convenienceItems_id", "name", "price"]
+        fields = ["id", "name", "price"]
 
 
-class basicCreateUpdateSerializer(serializers.ModelSerializer):
+class FoodRecipesSerializer(serializers.ModelSerializer, LikeBookmark):
+    like_count = serializers.SerializerMethodField(read_only=True)
+    bookmark_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = FoodRecipes
+        fields = [
+            "id",
+            "categoryCD",
+            "user",
+            "title",
+            "thumnail",
+            "intro",
+            "time",
+            "people_num",
+            "difficulty",
+            "like_count",
+            "bookmark_count",
+            "created_at",
+            "updated_at",
+        ]
+
+
+class BasicRecipeSerializer(serializers.ModelSerializer, LikeBookmark):
     user = serializers.StringRelatedField()
-    thumnail_url = serializers.CharField(source="thumnail")
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
     recipe_ingredients = IngredientsSerializer(many=True)
-    recipe_sub_items = serializers.SerializerMethodField()
+    recipe_process = RecipeProcessSerializer(many=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
+    bookmark_count = serializers.SerializerMethodField(read_only=True)
     recipe_comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -53,98 +75,82 @@ class basicCreateUpdateSerializer(serializers.ModelSerializer):
             "categoryCD",
             "user",
             "title",
-            "thumnail_url",
+            "thumnail",
             "video",
             "intro",
             "time",
             "people_num",
             "difficulty",
             "recipe_ingredients",
+            "recipe_process",
             "like_count",
             "bookmark_count",
             "created_at",
             "updated_at",
             "recipe_comments",
-            "recipe_sub_items",
         ]
-
-    def get_recipe_sub_items(self, obj):
-        recipe_process = RecipeProcessSerializer(obj.recipe_process.all(), many=True).data
-        recipe_image = RecipeImageSerializer(obj.recipe_image.all(), many=True).data
-
-        sub_items = []
-        sub_items.append({"recipeImage": recipe_image, "recipeProcess": recipe_process})
-        return sub_items
-
-    def get_like_count(self, obj):
-        return obj.like.count()
-
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
-
-    def image_split(self, media_url, recipe):
-        try:
-            image = RecipeImage.objects.get(image=media_url.replace("/media/", ""))
-            image.foodrecipe = recipe
-            image.state = "반영"
-            image.save()
-        except RecipeImage.DoesNotExist:
-            print("이미지가 존재하지 않음")
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop("recipe_ingredients")
         process_datas = validated_data.pop("recipe_process")
-        image_datas = validated_data.pop("recipe_image")
-        thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
 
+        user = self.context.get("request").user
+
+        if isinstance(user, AnonymousUser):
+            return print("user not fount")
+
+        validated_data["user"] = user
         recipe = FoodRecipes.objects.create(**validated_data)
+
         for ingredient_data in ingredients_data:
             Ingredients.objects.create(foodrecipe=recipe, **ingredient_data)
         for process_data in process_datas:
             RecipeProcess.objects.create(foodrecipe=recipe, **process_data)
-        for image_data in image_datas:
-            image_url = image_data.get("image")
-            self.image_split(media_url=image_url.get("url"), recipe=recipe)
-        self.image_split(media_url=thumnail_url, recipe=recipe)
 
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop("recipe_ingredients")
-        process_datas = validated_data.pop("recipe_process")
-        image_datas = validated_data.pop("recipe_image")
-        thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
+        ingredients_data = validated_data.pop("recipe_ingredients", "")
+        process_datas = validated_data.pop("recipe_process", "")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
         instance.save()
 
-        ConvenienceItems.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeProcess.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(foodrecipe_id=None, state="반영")
         for ingredient_data in ingredients_data:
-            Ingredients.objects.create(foodrecipe=instance, **ingredient_data)
+            try:
+                ingredient = Ingredients.objects.get(pk=ingredient_data["id"])
+                ingredient.type = ingredient_data.get("type", ingredient.type)
+                ingredient.name = ingredient_data.get("name", ingredient.name)
+                ingredient.count = ingredient_data.get("count", ingredient.count)
+                ingredient.unit = ingredient_data.get("unit", ingredient.unit)
+                ingredient.etc = ingredient_data.get("etc", ingredient.etc)
+                ingredient.save()
+
+            except Ingredients.DoesNotExist:
+                Ingredients.objects.create(**ingredient_data)
+
         for process_data in process_datas:
-            RecipeProcess.objects.create(foodrecipe=instance, **process_data)
-        for image_data in image_datas:
-            image_url = image_data.get("image")
-            self.image_split(media_url=image_url.get("url"), recipe=instance)
-        self.image_split(media_url=thumnail_url, recipe=instance)
-        RecipeImage.objects.filter(foodrecipe_id=None, state="반영").delete()
+            try:
+                process = RecipeProcess.objects.get(pk=process_data["pk"])
+                process.order = process.get("order", process.order)
+                process.image = process.get("image", process.image)
+                process.content = process.get("content", process.content)
+                process.save()
+
+            except RecipeProcess.DoesNotExist:
+                RecipeProcess.objects.create(**process_data)
+
         return instance
 
 
-class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
+class ConvenienceRecipeSerializers(serializers.ModelSerializer, LikeBookmark):
     user = serializers.StringRelatedField()
-    thumnail_url = serializers.CharField(source="thumnail")
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
     convenience_items = ConvenienceItemsSerializer(many=True)
+    recipe_process = RecipeProcessSerializer(many=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
+    bookmark_count = serializers.SerializerMethodField(read_only=True)
     recipe_comments = CommentSerializer(many=True, read_only=True)
-    recipe_sub_items = serializers.SerializerMethodField()
 
     class Meta:
         model = FoodRecipes
@@ -153,151 +159,68 @@ class ConvenienceCreateUpdateSerializer(serializers.ModelSerializer):
             "categoryCD",
             "user",
             "title",
-            "thumnail_url",
+            "thumnail",
             "video",
             "intro",
             "time",
-            "people_num",
             "difficulty",
             "convenience_items",
+            "recipe_process",
             "like_count",
             "bookmark_count",
             "created_at",
             "updated_at",
             "recipe_comments",
-            "recipe_sub_items",
         ]
-
-    def get_recipe_sub_items(self, obj):
-        recipe_process = RecipeProcessSerializer(obj.recipe_process.all(), many=True).data
-        recipe_image = RecipeImageSerializer(obj.recipe_image.all(), many=True).data
-
-        sub_items = []
-        sub_items.append({"recipeImage": recipe_image, "recipeProcess": recipe_process})
-        return sub_items
-
-    def get_like_count(self, obj):
-        return obj.like.count()
-
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
-
-    def image_split(self, media_url, recipe):
-        try:
-            image = RecipeImage.objects.get(image=media_url.replace("/media/", ""))
-            image.foodrecipe = recipe
-            image.state = "반영"
-            image.save()
-        except RecipeImage.DoesNotExist:
-            print("이미지가 존재하지 않음")
 
     def create(self, validated_data):
         convenience_items = validated_data.pop("convenience_items")
         process_datas = validated_data.pop("recipe_process")
-        image_datas = validated_data.pop("recipe_image")
-        thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
-        tot_price = sum(item["price"] for item in convenience_items)
 
-        recipe = FoodRecipes.objects.create(**validated_data, tot_price=tot_price)
+        user = self.context.get("request").user
+
+        if isinstance(user, AnonymousUser):
+            return print("user not fount")
+
+        validated_data["user"] = user
+        recipe = FoodRecipes.objects.create(**validated_data)
+
         for convenience_item in convenience_items:
-            ConvenienceItems.objects.create(foodrecipe=recipe, **convenience_item)
+            Ingredients.objects.create(foodrecipe=recipe, **convenience_item)
         for process_data in process_datas:
             RecipeProcess.objects.create(foodrecipe=recipe, **process_data)
-        for image_data in image_datas:
-            image_url = image_data.get("image")
-            self.image_split(media_url=image_url.get("url"), recipe=recipe)
-        self.image_split(media_url=thumnail_url, recipe=recipe)
 
         return recipe
 
     def update(self, instance, validated_data):
-        convenience_items = validated_data.pop("convenience_items")
-        process_datas = validated_data.pop("recipe_process")
-        image_datas = validated_data.pop("recipe_image")
-        thumnail_url = validated_data.get("thumnail")
-        validated_data["thumnail"] = "/media/" + validated_data.get("thumnail")
+        convenience_items = validated_data.pop("convenience_items", "")
+        process_datas = validated_data.pop("recipe_process", "")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
-        tot_price = 0
-        tot_price = sum(item["price"] for item in convenience_items)
-        instance.tot_price = tot_price
         instance.save()
 
-        ConvenienceItems.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeProcess.objects.filter(foodrecipe_id=instance.id).delete()
-        RecipeImage.objects.filter(foodrecipe_id=instance.id).update(foodrecipe_id=None, state="반영")
-
         for convenience_item in convenience_items:
-            ConvenienceItems.objects.create(foodrecipe=instance, **convenience_item)
+            try:
+                convenience_item = ConvenienceItems.objects.get(pk=convenience_item["id"])
+                convenience_item.name = convenience_item.get("name", convenience_item.name)
+                convenience_item.price = convenience_item.get("price", convenience_item.price)
+                convenience_item.save()
+            except ConvenienceItems.DoesNotExist:
+                ConvenienceItems.objects.create(**convenience_item)
+
         for process_data in process_datas:
-            RecipeProcess.objects.create(foodrecipe=instance, **process_data)
-        for image_data in image_datas:
-            image_url = image_data.get("image")
-            self.image_split(media_url=image_url.get("url"), recipe=instance)
-        self.image_split(media_url=thumnail_url, recipe=instance)
-        RecipeImage.objects.filter(foodrecipe_id=None, state="반영").delete()
+            try:
+                process = RecipeProcess.objects.get(pk=process_data["pk"])
+                process.order = process.get("order", process.order)
+                process.image = process.get("image", process.image)
+                process.content = process.get("content", process.content)
+
+                process.save()
+            except RecipeProcess.DoesNotExist:
+                RecipeProcess.objects.create(**process_data)
+
         return instance
-
-
-class FoodRecipesListSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.CharField(source="thumnail")
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FoodRecipes
-        fields = [
-            "id",
-            "categoryCD",
-            "user",
-            "title",
-            "thumnail_url",
-            "intro",
-            "like_count",
-            "bookmark_count",
-            "created_at",
-            "updated_at",
-        ]
-
-    def get_like_count(self, obj):
-        return obj.like.count()
-
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
-
-
-class ConvenienceRecipesListSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    thumnail_url = serializers.CharField(source="thumnail")
-    like_count = serializers.SerializerMethodField()
-    bookmark_count = serializers.SerializerMethodField()
-    tot_price = serializers.ReadOnlyField()
-
-    class Meta:
-        model = FoodRecipes
-        fields = [
-            "id",
-            "categoryCD",
-            "user",
-            "title",
-            "tot_price",
-            "thumnail_url",
-            "intro",
-            "like_count",
-            "bookmark_count",
-            "created_at",
-            "updated_at",
-        ]
-
-    def get_like_count(self, obj):
-        return obj.like.count()
-
-    def get_bookmark_count(self, obj):
-        return obj.bookmark.count()
 
 
 class SearchRecipeSerializer(serializers.ModelSerializer):
@@ -332,11 +255,3 @@ class SearchRecipeSerializer(serializers.ModelSerializer):
 
     def get_bookmark_count(self, obj):
         return obj.bookmark.count()
-
-
-class ImageUploadSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
-
-    class Meta:
-        model = RecipeImage
-        fields = "__all__"

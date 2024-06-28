@@ -17,7 +17,7 @@ from core.mixins import (
     UpdateModelMixin,
 )
 from recipes.models import FoodRecipes
-from recipes.serializers import FoodRecipesListSerializer
+from recipes.serializers import FoodRecipesSerializer
 
 from .serializers import (
     UserCreateSerializer,
@@ -126,7 +126,7 @@ class UserViewSet(
 
 
 class RecipeBookmarkList(SimpleJWTMixin, ListModelMixin, GenericViewSet):
-    serializer_class = FoodRecipesListSerializer
+    serializer_class = FoodRecipesSerializer
 
     def get_queryset(self):
         user = self.get_user_instance(self.request)
@@ -143,7 +143,7 @@ class RecipeBookmarkList(SimpleJWTMixin, ListModelMixin, GenericViewSet):
 
 
 class RecipeWriteList(SimpleJWTMixin, ListModelMixin, GenericViewSet):
-    serializer_class = FoodRecipesListSerializer
+    serializer_class = FoodRecipesSerializer
 
     def get_queryset(self):
         user = self.get_user_instance(self.request)

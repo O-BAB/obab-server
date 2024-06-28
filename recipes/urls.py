@@ -1,29 +1,27 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
+from rest_framework.urls import path
+
+from recipes.viewsets import FoodrecipeViewsets
 
 from .views import BookmarkToggleAPIView, LikeToggleAPIView, SearchRecipe
-from .viewsets import (
-    ImageUploadView,
-    RecipeViewset,
-    basicCreateView,
-    basicUpdateView,
-    convenienceCreateView,
-    convenienceUpdateView,
-)
 
 app_name = "recipes"
 
-router = DefaultRouter()
-router.register(r"food-recipes", RecipeViewset, basename="foodrecipe")
+router = SimpleRouter(trailing_slash=False)
+
+recipeurls = [
+    path("recipes/list", FoodrecipeViewsets.as_view({"get": "list"})),
+    path("recipes/<str:category>-list", FoodrecipeViewsets.as_view({"get": "list"})),
+    path("recipes/<int:pk>", FoodrecipeViewsets.as_view({"get": "retrieve", "delete": "destroy"})),
+    path("recipes/basic", FoodrecipeViewsets.as_view({"post": "create_basic"})),
+    path("recipes/basic/<int:pk>", FoodrecipeViewsets.as_view({"patch": "partial_basic"})),
+    path("recipes/convenience", FoodrecipeViewsets.as_view({"post": "create_convenience"})),
+    path("recipes/convenience/<int:pk>", FoodrecipeViewsets.as_view({"patch": "partial_convenience"})),
+]
 
 urlpatterns = [
-    path("recipes/basic", basicCreateView.as_view(), name="basic-recipes-create"),
-    path("recipes/basic/<int:id>/", basicUpdateView.as_view(), name="basic-recipes-update"),
-    path("recipes/convenience", convenienceCreateView.as_view(), name="convenience-recipes-create"),
-    path("recipes/convenience/<int:id>/", convenienceUpdateView.as_view(), name="convenience-recipes-update"),
-    path("recipes/images", ImageUploadView.as_view(), name="recipe-images"),
-    path("recipes/", include(router.urls)),
     path("recipes/like-toggle/", LikeToggleAPIView.as_view()),
     path("recipes/bookmark-toggle/", BookmarkToggleAPIView.as_view()),
     path("search", SearchRecipe.as_view()),
+    *recipeurls,
 ]
