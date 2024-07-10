@@ -11,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet, mixins
 from rest_framework_simplejwt.tokens import AccessToken, OutstandingToken, RefreshToken, Token
 
 from accounts.models import User
-from core.exceptions.service_exceptions import InvalidRequest, UserNotFound
+from core.exceptions.service_exceptions import InvalidRequest, JWTOutstandingNotFound, UserNotFound
 from core.middlewares import CustomJWTAuthentication
 
 logger = logging.getLogger("django.server")
@@ -188,6 +188,8 @@ class TokenMixin:
 
 class SimpleJWTMixin(CustomJWTAuthentication, TokenMixin):
     def get_raw_token(self, header: bytes) -> bytes | None:
+        if header is None:
+            raise JWTOutstandingNotFound
         return super().get_raw_token(header)
 
     def get_user_instance(self, request, _type="access_token", token_verifying=False):
