@@ -119,7 +119,7 @@ class BasicRecipeSerializer(serializers.ModelSerializer, LikeBookmark):
 
         for ingredient_data in ingredients_data:
             try:
-                ingredient = Ingredients.objects.get(pk=ingredient_data["id"])
+                ingredient = Ingredients.objects.get(pk=ingredient_data.get("id"))
                 ingredient.type = ingredient_data.get("type", ingredient.type)
                 ingredient.name = ingredient_data.get("name", ingredient.name)
                 ingredient.count = ingredient_data.get("count", ingredient.count)
@@ -132,10 +132,10 @@ class BasicRecipeSerializer(serializers.ModelSerializer, LikeBookmark):
 
         for process_data in process_datas:
             try:
-                process = RecipeProcess.objects.get(pk=process_data["pk"])
-                process.order = process.get("order", process.order)
-                process.image = process.get("image", process.image)
-                process.content = process.get("content", process.content)
+                process = RecipeProcess.objects.get(pk=process_data.get("id"))
+                process.order = process_data.get("order", process.order)
+                process.image = process_data.get("image", process.image)
+                process.content = process_data.get("content", process.content)
                 process.save()
 
             except RecipeProcess.DoesNotExist:
@@ -202,7 +202,7 @@ class ConvenienceRecipeSerializers(serializers.ModelSerializer, LikeBookmark):
 
         for convenience_item in convenience_items:
             try:
-                convenience_item = ConvenienceItems.objects.get(pk=convenience_item["id"])
+                convenience_item = ConvenienceItems.objects.get(pk=convenience_item.get("id"))
                 convenience_item.name = convenience_item.get("name", convenience_item.name)
                 convenience_item.price = convenience_item.get("price", convenience_item.price)
                 convenience_item.save()
@@ -211,10 +211,10 @@ class ConvenienceRecipeSerializers(serializers.ModelSerializer, LikeBookmark):
 
         for process_data in process_datas:
             try:
-                process = RecipeProcess.objects.get(pk=process_data["pk"])
-                process.order = process.get("order", process.order)
-                process.image = process.get("image", process.image)
-                process.content = process.get("content", process.content)
+                process = RecipeProcess.objects.get(pk=process_data.get("pk"))
+                process.order = process_data.get("order", process.order)
+                process.image = process_data.get("image", process.image)
+                process.content = process_data.get("content", process.content)
 
                 process.save()
             except RecipeProcess.DoesNotExist:
